@@ -3,3 +3,4 @@ nltk>=3.0
 numpy>=1.10.4
 scipy>=0.17.0
 scikit-learn>=0.17.0
+jupyter>=1.0.0
