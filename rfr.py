@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
+from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import mean_squared_error
 
 df_train = pd.read_csv('data/train.csv', encoding="ISO-8859-1")
 df_test = pd.read_csv('data/test.csv', encoding="ISO-8859-1")
@@ -13,25 +15,26 @@ N = df_train.shape[0]
 df_all = pd.concat((df_train, df_test), axis=0, ignore_index=True)
 df_all = pd.merge(df_all, df_description, how='left', on='product_uid')
 
-tfv = TfidfVectorizer(ngram_range=(1,2), analyzer='word')
-tfv.fit_transform(df_all['product_title'] + df_all['product_description'] + df_all['search_term']) # takes quite some time, but not too long
+tfv = TfidfVectorizer(ngram_range=(1,2), analyzer='word', stop_words='english')
 
-df_all['query_length'] = df_all['search_term'].map(lambda x:len(x.split())).astype(np.int64)
-df_all['title_length'] = df_all['product_title'].map(lambda x: len(x.split())).astype(np.int64)
-df_all['description_length'] = df_all['product_description'].map(lambda x: len(x.split())).astype(np.int64)
+df_all["product_info"] = df_all['product_title'] + "\t" +  df_all['product_description'] + "\t"+ df_all['search_term']
 
-df_all_rfr = df_all.drop(['search_term','product_title','product_description'],axis=1)
+tfv.fit_transform(df_all["product_info"])
+tfidf = tfv.fit_transform(df_all["product_info"])
 
-df_train = df_all_rfr.iloc[:N]
-df_test = df_all_rfr.iloc[N:]
-id_test = df_test['id']
+tsvd = TruncatedSVD(n_components=100, random_state=20)
+tfidf_trunc = tsvd.fit_transform(tfidf)
 
+x_train = tfidf_trunc[:N]
+x_test = tfidf_trunc[N:]
+df_train = df_all.iloc[:N]
 y_train = df_train['relevance'].values
-X_train = df_train.drop(['id', 'relevance'], axis=1).values
-X_test = df_test.drop(['id', 'relevance'], axis=1).values
 
-clf = RandomForestRegressor()
-clf.fit(X_train, y_train)
-y_pred = clf.predict(X_test)
+clf = RandomForestRegressor(n_estimators = 100)
+clf.fit(x_train, y_train)
 
-#pd.DataFrame({"id": id_test, "relevance": y_pred}).to_csv('results/submission.csv',index=False)
+y_pred = clf.predict(x_test)
+
+id_test = df_all.iloc[N:]['id']
+
+pd.DataFrame({"id": id_test, "relevance": y_pred}).to_csv('results/submission.csv',index=False)
