@@ -1,0 +1,23 @@
+General remarks:
+ - tf-idf seems like a good start
+ - The task seems difficult but it can be done fairly easily
+ - Look at the forum reference to a similar competition (Cheng Long Chong or something like that)
+ - Random forest regression is fine
+
+For preprocessing:
+ - Make sure not to throw away number,
+
+Possible features:
+ - Similarity between query and product, some semantic similarity measure
+  --> Either wordnet or 2nd order coocurrence (word2vec)
+ - Character n-gram features
+
+Data exploration:
+ - Find out the number of unique queries and products
+
+Suggestions:
+ - Start with simple features
+ - Check for literal word overlap
+ - Maybe train a word2vec on the description
+ - Try disregarding idf
+ - Look at the type of problem, if it's a recall problem, then query expansion might help
