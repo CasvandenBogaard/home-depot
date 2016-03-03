@@ -37,6 +37,17 @@ def features(data):
 
     return df.iloc[:]
 
+
+def extract_sizes(data):
+    print(data['search_term'])
+    print(data[''])
+    pattern = '(\d+(\.\d+)? xbi \d+(\.*\d+)?)( xbi \d+(\.\d+)?)*'
+    product_length1 = [re.search(pattern, search).group(0).split(" xbi ") if re.search(pattern,search) else "none" for search in data['search_term']]
+    print(product_length1[:50])
+
+
+
+
 def extract_features(train, test):
     result_train = features(train)
     result_test  = features(test)
@@ -134,6 +145,7 @@ df_train.drop('name',inplace=True,axis=1)
 df_train.columns = df_train.columns.str.replace('value','color')
 
 
+
 df_train["product_title"] = df_train["product_title"].map(lambda x:str_stem(x))
 df_train["search_term"] = df_train["search_term"].map(lambda x:str_stem(x))
 df_train["brand"] = df_train["brand"].map(lambda x:str_stem(x))
@@ -186,6 +198,7 @@ df_test["search_term"] = df_test["search_term"].map(lambda x:str_stem(x))
 
 id_test = df_test['id']
 
+extract_sizes(df_train)
 x_train, x_test, y_train = extract_features(df_train, df_test)
 clf = RandomForestRegressor(n_estimators=30, random_state=26, verbose=True)
 clf.fit(x_train, y_train)
