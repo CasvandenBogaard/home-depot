@@ -15,8 +15,7 @@ def features(data):
     df['descr_match'] = [1 if x in y else 0 for x,y in zip(data['search_term'], data['product_description'])]
     df['title_match'] = [1 if x in y else 0 for x,y in zip(data['search_term'], data['product_title'])]
     df['brand_match'] = [1 if str(y) in x else 0 for x,y in zip(data['search_term'], data['brand'])]
-    #df['color_match'] = [1 if str(y) in x else 0 for x,y in zip(data['search_term'], data['color'])]
-    #df['query_length'] = data['search_term'].map(lambda x:len(x.split()))
+    df['attribute_overlap'] = [sum(int(word in str(y)) for word in x.split()) for x,y in zip(data['search_term'], data['joined_attributes'])]
     df['query_length'] = [len(x.split()) for x in data['search_term']]
     
     df = pd.DataFrame({
@@ -25,8 +24,8 @@ def features(data):
         'descr_match': df['descr_match'],
         'title_match': df['title_match'],
         'brand_match': df['brand_match'],
-        #'color_match': df['color_match'],
-        'query_length': df['query_length']
+        'attribute_overlap': df['attribute_overlap'],
+        'query_length': df['query_length'],
     })
 
     return df.iloc[:]
@@ -63,9 +62,13 @@ df_train.columns = df_train.columns.str.replace('value','brand')
 
 color_attribute_mask = ['Color' in str(name) for name in df_attributes['name']]
 colors = df_attributes.loc[color_attribute_mask,:]
-df_train = pd.merge(df_train, colors, how='left', on='product_uid')
-df_train.drop('name',inplace=True,axis=1)
-df_train.columns = df_train.columns.str.replace('value','color')
+df_atrr = colors.drop('name', axis=1)
+df_atrr["value"] = df_atrr["value"].astype(str)
+grouped = df_atrr.groupby('product_uid').apply(lambda x: (" ").join(x.value))
+groupeddf = grouped.reset_index()
+groupeddf.columns = ['product_uid', 'joined_attributes']
+df_train = pd.merge(df_train, groupeddf, how='left', on='product_uid')
+
 
 df_train = pd.merge(df_train, df_description, how='left', on='product_uid')
 
@@ -95,9 +98,8 @@ df_test = pd.merge(df_test, df_description, how='left', on='product_uid')
 df_test = pd.merge(df_test, brands, how='left', on='product_uid')
 df_test.drop('name',inplace=True,axis=1)
 df_test.columns = df_test.columns.str.replace('value','brand')
-#df_test = pd.merge(df_test, colors, how='left', on='product_uid')
-#df_test.drop('name',inplace=True,axis=1)
-#df_test.columns = df_test.columns.str.replace('value','color')
+
+df_test = pd.merge(df_test, groupeddf, how='left', on='product_uid')
 
 id_test = df_test['id']
 
