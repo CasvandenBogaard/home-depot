@@ -122,10 +122,19 @@ def str_stem(s):
     else:
         return "null"
 
-df_train = pd.read_csv('data/train.csv', encoding="ISO-8859-1")
-df_description = pd.read_csv('data/product_descriptions.csv', encoding="ISO-8859-1")
-df_attributes = pd.read_csv('data/attributes.csv', encoding="ISO-8859-1")
+def norm_length(s):
+    pattern = '.*(Width|Height|Depth|Length).*'
+    if(re.match(pattern, s)):
+        return "Length_Norm"
+    else:
+        return s
 
+df_train = pd.read_csv('data/train.csv', encoding="ISO-8859-1").head(50)
+df_description = pd.read_csv('data/product_descriptions.csv', encoding="ISO-8859-1").head(1000)
+df_attributes = pd.read_csv('data/attributes.csv', encoding="ISO-8859-1").head(1000)
+
+
+df_attributes["name"] = df_attributes["name"].map(lambda s:norm_length(s))
 
 brands = df_attributes[df_attributes.name=='MFG Brand Name']
 df_train = pd.merge(df_train, brands, how='left', on='product_uid')
@@ -137,6 +146,9 @@ df_train = pd.merge(df_train, colors, how='left', on='product_uid')
 df_train.drop('name',inplace=True,axis=1)
 df_train.columns = df_train.columns.str.replace('value','color')
 
+lengths = df_attributes[df_attributes.name=='Length_Norm']
+df_train = pd.merge(df_train, lengths, how='left', on='product_uid')
+print(df_train)
 
 df_train["product_title"] = df_train["product_title"].map(lambda x:str_stem(x))
 df_train["search_term"] = df_train["search_term"].map(lambda x:str_stem(x))
