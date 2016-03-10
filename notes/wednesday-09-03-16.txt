@@ -1,0 +1,8 @@
+- You may want to make a modular system
+- Take a look at the queries that are very wrong
+- Synonym stuff/word2
+- Maybe character n-gram overlap instead of word overlap
+- Add rules and leave those datapoints out of RFR
+- Maybe disregard the twos and train on extremes
+- Different kind of queries
+- Maybe learn color table
