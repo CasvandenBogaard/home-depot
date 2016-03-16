@@ -53,7 +53,7 @@ def extract_features(train, test):
 
 def extract_sizes(data):
     pattern = '(\d+(\.\d+)? xbi \d+(\.*\d+)?)( xbi \d+(\.\d+)?)*'
-    product_lengths = [re.search(pattern, search).group(0).split(" xbi ") if re.search(pattern,search) else "none" for search in data['search_term']]
+    product_lengths = ' '.join([re.search(pattern, search).group(0).split(" xbi ") if re.search(pattern,search) else "none" for search in data['search_term']])
 
 def str_stem(s): 
     if isinstance(s, str):
@@ -134,7 +134,6 @@ df_description = pd.read_csv('data/product_descriptions.csv', encoding="ISO-8859
 df_attributes = pd.read_csv('data/attributes.csv', encoding="ISO-8859-1").head(1000)
 
 
-df_attributes["name"] = df_attributes["name"].map(lambda s:norm_length(s))
 
 brands = df_attributes[df_attributes.name=='MFG Brand Name']
 df_train = pd.merge(df_train, brands, how='left', on='product_uid')
@@ -146,9 +145,6 @@ df_train = pd.merge(df_train, colors, how='left', on='product_uid')
 df_train.drop('name',inplace=True,axis=1)
 df_train.columns = df_train.columns.str.replace('value','color')
 
-lengths = df_attributes[df_attributes.name=='Length_Norm']
-df_train = pd.merge(df_train, lengths, how='left', on='product_uid')
-print(df_train)
 
 df_train["product_title"] = df_train["product_title"].map(lambda x:str_stem(x))
 df_train["search_term"] = df_train["search_term"].map(lambda x:str_stem(x))
