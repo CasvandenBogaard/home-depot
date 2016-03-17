@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -6,28 +7,55 @@ from sklearn.metrics import mean_squared_error
 import os.path
 from decimal import Decimal
 import matplotlib.pyplot as plt
+import nltk
 
 def rmse(true, test):
     return mean_squared_error(true, test)**0.5
 
+def n_gram(attribute, data, n_gram_attr, n):
+    data[str(n_gram_attr)] = data[str(attribute)]
+
+    ngrams = lambda b, n: [b[i:i+n] for i in range(len(b)-n+1)]
+    wordlist = [x.split() for x in data[str(attribute)]]
+
+    ng = [[ngrams(y,n) if len(y) >= n else [y] for y in x] for x in wordlist]
+    result = [[item for sublist in x for item in sublist] for x in ng]
+    data[str(n_gram_attr)] = [" ".join(x) for x in result]
+
+def find_num_nouns(attribute, data, post_attr):
+    sentencelist = [x.split() for x in data[str(attribute)]]
+
+    print(len(sentencelist))
+    result = nltk.pos_tag_sents(sentencelist)
+    nouns = [[word for word,pos in lst if pos not in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
+    data[str(post_attr)] = [len(x) for x in nouns]
+    print(len(data[str(post_attr)]))
+
+
 def features(data):
     df = pd.DataFrame()
     df['descr_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(data['search_term'], data['product_description'])]
-    df['title_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(data['search_term'], data['product_title'])]
+    df['descr_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(data['search_term'], data['product_description'], df['descr_overlap'])]
+    df['title_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(data['search_term_ngram'], data['product_title_ngram'])]
+    df['title_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(data['search_term_ngram'], data['product_title_ngram'], df['title_overlap'])]
     df['descr_match'] = [1 if x in y else 0 for x,y in zip(data['search_term'], data['product_description'])]
-    df['title_match'] = [1 if x in y else 0 for x,y in zip(data['search_term'], data['product_title'])]
+    df['title_match'] = [1 if x in y else 0 for x,y in zip(data['search_term_ngram'], data['product_title_ngram'])]
     df['brand_match'] = [1 if str(y) in x else 0 for x,y in zip(data['search_term'], data['brand'])]
     df['color_match'] = [1 if str(y) in x else 0 for x,y in zip(data['search_term'], data['joined_attributes'])]
     df['attribute_overlap'] = [sum(int(word in str(y)) for word in x.split()) for x,y in zip(data['search_term'], data['joined_attributes'])]
-    df['query_length'] = [len(x.split()) for x in data['search_term']]
+    df['query_length'] = [len(x.split()) for x in data['search_term_ngram']]
+    df['total_match_title'] = [math.floor(x/y) for x,y in zip(df['title_overlap'], df['query_length'])]
     df['query_char_length'] = [len(x) for x in data['search_term']]
     df['query_avg_length'] = [y/x for x,y in zip(df['query_length'], df['query_char_length'])]
-    df['title_ratio'] = [float(x)/y for x,y in zip(df['title_overlap'], df['query_length'])]
-    df['descr_ratio'] = [float(x)/y for x,y in zip(df['descr_overlap'], df['query_length'])]
+    df['numbers'] = [sum(s.isdigit() for s in x.split()) for x in data['search_term']]
+    df['number_st_rel'] = [y/x for x,y in zip(df['query_char_length'], df['numbers'])]
+    df['num_nouns'] = [int(x) for x in data['num_nouns']]
     
     df = pd.DataFrame({
         'descr_overlap': df['descr_overlap'],
+        'descr_overlap_jc': df['descr_overlap_jc'],
         'title_overlap': df['title_overlap'],
+        'title_overlap_jc': df['title_overlap_jc'],
         'descr_match': df['descr_match'],
         'title_match': df['title_match'],
         'brand_match': df['brand_match'],
@@ -35,10 +63,9 @@ def features(data):
         'attribute_overlap': df['attribute_overlap'],
         'query_length': df['query_length'],
         'query_char_length': df['query_char_length'],
-        #'query_avg_length': df['query_avg_length'],
-            
-        #'title_ratio': df['title_ratio'],
-        #'descr_ratio': df['descr_ratio'],
+        'total_match_title': df['total_match_title'],
+        'number_st_rel': df['number_st_rel'],
+        'num_nouns': df['num_nouns']
     })
 
     return df.iloc[:]
@@ -68,6 +95,14 @@ else:
     df_test = pd.read_csv('data/test.csv', encoding="ISO-8859-1")
 
 
+n_gram('search_term', df_train, 'search_term_ngram', 3)
+n_gram('product_title', df_train, 'product_title_ngram', 3)
+n_gram('search_term', df_test, 'search_term_ngram', 3)
+n_gram('product_title', df_test, 'product_title_ngram', 3)
+
+find_num_nouns('search_term', df_train, 'num_nouns')
+find_num_nouns('search_term', df_test, 'num_nouns')
+
 brands = df_attributes[df_attributes.name=='MFG Brand Name']
 df_train = pd.merge(df_train, brands, how='left', on='product_uid')
 df_train.drop('name',inplace=True,axis=1)
@@ -89,7 +124,7 @@ df_train = pd.merge(df_train, df_description, how='left', on='product_uid')
 N = df_train.shape[0]
 
 # Cross-validation setup
-kf = cross_validation.KFold(N, n_folds=10)
+kf = cross_validation.KFold(N, n_folds=10, shuffle=True)
 avg_rmse = 0.
 
 for train, test in kf:
@@ -97,19 +132,34 @@ for train, test in kf:
     test_set  = df_train.loc[test]
     x_train, x_test, y_train, y_test = extract_features(train_set, test_set)
 
-    
-    clf = RandomForestRegressor(n_estimators = 30, max_depth = 11, n_jobs=-1)
+    clf = RandomForestRegressor(n_estimators=100, max_depth=11, n_jobs=-1)
     print("Fitting random forest regressor")
     
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
     names = list(x_train.columns.values)
-    print(sorted(zip(map(lambda x: float(round(Decimal(x), 3)), clf.feature_importances_), names), reverse=True) )
-    
+
+    uniques = np.unique(y_test)
+
+    # results = []
+    # for u in uniques:
+    #     indexes = np.where(y_test==u)
+    #     results.append(y_pred[indexes])
+    #
+    # plt.boxplot(results)
+    # plt.plot(range(1, len(uniques) + 1), uniques, 'o')
+    # plt.xticks(range(1, len(uniques) + 1), uniques)
+    # plt.ylim((0,4))
+    # plt.show()
+    #
+    # print(x_test.iloc[0])
+    # print(clf.feature_importances_)
+
     rmse_fold = rmse(y_test, y_pred)
     print(rmse_fold)
     avg_rmse += rmse_fold
+
 avg_rmse = avg_rmse/10
 print("Avg rmse: " + str(avg_rmse))
 
