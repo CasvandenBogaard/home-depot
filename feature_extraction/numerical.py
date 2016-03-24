@@ -80,3 +80,7 @@ class NumberOfNouns:
         nouns = [[word for word,pos in lst if pos in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
 
         ndf['number_of_nouns'] = [int(len(x)) for x in nouns]
+
+class SpellingCorrectionPerformed:
+    def extract(self, tdf, ndf):
+        ndf['spell_corrected'] = [x for x in tdf['spell_corrected']]

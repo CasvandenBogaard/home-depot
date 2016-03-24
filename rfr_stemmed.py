@@ -54,22 +54,6 @@ for train, test in kf:
 
     names = list(x_train.columns.values)
 
-    #uniques = np.unique(y_test)
-
-    # results = []
-    # for u in uniques:
-    #     indexes = np.where(y_test==u)
-    #     results.append(y_pred[indexes])
-    #
-    # plt.boxplot(results)
-    # plt.plot(range(1, len(uniques) + 1), uniques, 'o')
-    # plt.xticks(range(1, len(uniques) + 1), uniques)
-    # plt.ylim((0,4))
-    # plt.show()
-    #
-    # print(x_test.iloc[0])
-    # print(clf.feature_importances_)
-
     rmse_fold = rmse(y_test, y_pred)
     print(rmse_fold)
     avg_rmse += rmse_fold

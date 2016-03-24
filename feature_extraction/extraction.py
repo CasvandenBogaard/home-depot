@@ -31,6 +31,7 @@ class FeatureExtractor:
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
             'Ratio of Numbers': N.RatioNumbersInQuery(),
             'Number of Nouns': N.NumberOfNouns(),
+            'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
         }
 
     def extractTextualFeatures(self, df):
