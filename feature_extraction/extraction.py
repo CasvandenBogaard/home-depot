@@ -1,11 +1,13 @@
 import pandas as pd
 import feature_extraction.textual as T
 import feature_extraction.numerical as N
+import os
 
 class FeatureExtractor:
 
-    def __init__(self, descriptionDF, attributeDF, verbose=False):
+    def __init__(self, descriptionDF, attributeDF, verbose=False, name=""):
         self.isVerbose = verbose
+        self.name = name
         self.textualExtractors = {
             'Search Term Ngrams': T.SearchTermNgrams(),
             'Product Title Ngrams': T.ProductTitleNgrams(),
@@ -14,6 +16,7 @@ class FeatureExtractor:
             'Colors': T.Colors(attributeDF)
         }
         self.numericalExtractors = {
+            'Word2Vec Similarity': N.Word2VecSimilarity(),
             'Description Overlap': N.DescriptionOverlap(),
             'Description Overlap Jaccard': N.DescriptionOverlapJaccard(),
             'Description Match': N.DescriptionMatch(),
@@ -34,19 +37,35 @@ class FeatureExtractor:
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
         }
 
-    def extractTextualFeatures(self, df):
+    def extractTextualFeatures(self, df, saveResults=False):
+        if saveResults and os.path.isfile('data/features/text_{}.csv'.format(self.name)):
+            if (self.isVerbose):
+                print("Textual feature extraction: reading from saved file")
+            return pd.read_csv('data/features/text_{}.csv'.format(self.name))
+
         for key, extractor in self.textualExtractors.items():
             if (self.isVerbose):
                 print("Textual feature extraction: {}".format(key))
             extractor.extract(df)
 
+        if saveResults:
+            df.to_csv('data/features/text_{}.csv'.format(self.name))
+
         return df
 
-    def extractNumericalFeatures(self, df):
+    def extractNumericalFeatures(self, df, saveResults=False):
+        if saveResults and os.path.isfile('data/features/numerical_{}.csv'.format(self.name)):
+            if (self.isVerbose):
+                print("Numerical feature extraction: reading from saved file")
+            return pd.read_csv('data/features/numerical_{}.csv'.format(self.name))
+
         ndf = pd.DataFrame()
         for key, extractor in self.numericalExtractors.items():
             if (self.isVerbose):
                 print("Numerical feature extraction: {}".format(key))
             extractor.extract(df, ndf)
+
+        if saveResults:
+            ndf.to_csv('data/features/numerical_{}.csv'.format(self.name))
 
         return ndf

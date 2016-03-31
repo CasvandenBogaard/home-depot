@@ -1,5 +1,7 @@
 import math
 import nltk
+import os
+import gensim.models.word2vec as w2v
 
 class DescriptionOverlap:
     def extract(self, tdf, ndf):
@@ -84,3 +86,16 @@ class NumberOfNouns:
 class SpellingCorrectionPerformed:
     def extract(self, tdf, ndf):
         ndf['spell_corrected'] = [x for x in tdf['spell_corrected']]
+
+class Word2VecSimilarity:
+    def extract(self, tdf, ndf):
+        if os.path.isfile('data/word2vec/full'):
+            model = w2v.Word2Vec.load('data/word2vec/full')
+            ndf['word2vec_sim'] = [
+                sum(
+                    model.similarity(q, t)
+                    for q in x.split() if q in model.vocab
+                    for t in y.split() if t in model.vocab
+                )
+                for x,y in zip(tdf['search_term'], tdf['product_title'])
+            ]
