@@ -3456,7 +3456,7 @@ stemmer = SnowballStemmer('english')
 PREPROCESS_THIS = ["train", "test", "attributes", "description"] # Remove the things you don't need
 
 if ('train' in PREPROCESS_THIS):
-    df_train = pd.read_csv('data/train.csv', encoding="ISO-8859-1")
+    df_train = pd.read_csv('../data/train.csv', encoding="ISO-8859-1")
 
     print("stemming training product title")
     df_train["product_title"] = df_train["product_title"].map(lambda x:str_stem(x))
@@ -3465,10 +3465,10 @@ if ('train' in PREPROCESS_THIS):
     print("stemming training search term")
     df_train["search_term"] = df_train["search_term"].map(lambda x:str_stem(x))
 
-    df_train.to_csv('data/stemmed/train.csv', index=False)
+    df_train.to_csv('../data/stemmed/train.csv', index=False)
 
 if ('test' in PREPROCESS_THIS):
-    df_test = pd.read_csv('data/test.csv', encoding="ISO-8859-1")
+    df_test = pd.read_csv('../data/test.csv', encoding="ISO-8859-1")
 
     print("stemming test product title")
     df_test["product_title"] = df_test["product_title"].map(lambda x:str_stem(x))
@@ -3477,20 +3477,20 @@ if ('test' in PREPROCESS_THIS):
     print("stemming test search term")
     df_test["search_term"] = df_test["search_term"].map(lambda x:str_stem(x))
 
-    df_test.to_csv('data/stemmed/test.csv', index=False)
+    df_test.to_csv('../data/stemmed/test.csv', index=False)
 
 if ('attributes' in PREPROCESS_THIS):
-    df_attributes = pd.read_csv('data/attributes.csv', encoding="ISO-8859-1")
+    df_attributes = pd.read_csv('../data/attributes.csv', encoding="ISO-8859-1")
 
     print("stemming value")
     df_attributes["value"] = df_attributes["value"].map(lambda x: str_stem(x))
 
-    df_attributes.to_csv('data/stemmed/attributes.csv', index=False)
+    df_attributes.to_csv('../data/stemmed/attributes.csv', index=False)
 
 if ('description' in PREPROCESS_THIS):
-    df_description = pd.read_csv('data/product_descriptions.csv', encoding="ISO-8859-1")
+    df_description = pd.read_csv('../data/product_descriptions.csv', encoding="ISO-8859-1")
 
     print("stemming product description")
     df_description["product_description"] = df_description["product_description"].map(lambda x:str_stem(x))
 
-    df_description.to_csv('data/stemmed/product_descriptions.csv', index=False)
+    df_description.to_csv('../data/stemmed/product_descriptions.csv', index=False)
