@@ -91,11 +91,19 @@ class Word2VecSimilarity:
     def extract(self, tdf, ndf):
         if os.path.isfile('data/word2vec/full'):
             model = w2v.Word2Vec.load('data/word2vec/full')
+            title_in_model = [[q for q in x.split() if q in model.vocab] for x in tdf['product_title']]
+            query_in_model = [[q for q in x.split() if q in model.vocab] for x in tdf['search_term']]
+
             ndf['word2vec_sim'] = [
-                sum(
-                    model.similarity(q, t)
-                    for q in x.split() if q in model.vocab
-                    for t in y.split() if t in model.vocab
-                )
-                for x,y in zip(tdf['search_term'], tdf['product_title'])
+                model.n_similarity(x, y) if (len(x) > 0 and len(y) > 0) else 0
+                for x,y in zip(query_in_model, title_in_model)
             ]
+
+class NumberOfVowelsSearchTerm:
+    def extract(self, tdf, ndf):
+        ndf['num_vovels_search_term'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['search_term']]
+
+class NumberOfVowelsTitle:
+    def extract(self, tdf, ndf):
+        ndf['num_vovels_title'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['product_title']]
+
