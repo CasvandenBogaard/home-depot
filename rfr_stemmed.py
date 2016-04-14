@@ -13,6 +13,7 @@ from sklearn.isotonic import IsotonicRegression
 from sklearn.kernel_ridge import KernelRidge
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
+from Lasagne_Network import Network
 
 def rmse(true, test):
     return mean_squared_error(true, test)**0.5
@@ -148,6 +149,12 @@ def train_classifiers(x_train, y_train):
     
     #clfs.append(clf_kr)
     #clf_feats.append(features)
+
+    #Network regressor
+    clf_net = Network()
+    features = []
+    clfs.append(clf_gb)
+    clf_feats.append(features)
     
     return clfs, clf_feats
     
