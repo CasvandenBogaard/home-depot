@@ -265,8 +265,8 @@ else:
 
 fext = FeatureExtractor(df_description, df_attributes, verbose=True, name="train")
 
-df_train = fext.extractTextualFeatures(df_train, saveResults=True)
-df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed, saveResults=True)
+df_train = fext.extractTextualFeatures(df_train, saveResults=False)
+df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed, saveResults=False)
 y_train = get_target_values(df_train, df_test)
 
 

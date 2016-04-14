@@ -33,7 +33,7 @@ class Colors:
 
         df['colors'] = tempd['colors']
 
-class SearchTermNgrams:
+class SearchTerm2grams:
     def n_gram(self, attribute, data, n_gram_attr, n):
         data[str(n_gram_attr)] = data[str(attribute)]
 
@@ -45,9 +45,9 @@ class SearchTermNgrams:
         data[str(n_gram_attr)] = [" ".join(x) for x in result]
 
     def extract(self, df):
-        self.n_gram('search_term', df, 'search_term_ngram', 3)
-
-class ProductTitleNgrams:
+        self.n_gram('search_term', df, 'search_term_2gram',2)
+        
+class SearchTerm3grams:
     def n_gram(self, attribute, data, n_gram_attr, n):
         data[str(n_gram_attr)] = data[str(attribute)]
 
@@ -59,4 +59,60 @@ class ProductTitleNgrams:
         data[str(n_gram_attr)] = [" ".join(x) for x in result]
 
     def extract(self, df):
-        self.n_gram('product_title', df, 'product_title_ngram', 3)
+        self.n_gram('search_term', df, 'search_term_3gram',3)
+
+class SearchTerm4grams:
+    def n_gram(self, attribute, data, n_gram_attr, n):
+        data[str(n_gram_attr)] = data[str(attribute)]
+
+        ngrams = lambda b, n: [b[i:i+n] for i in range(len(b)-n+1)]
+        wordlist = [x.split() for x in data[str(attribute)]]
+
+        ng = [[ngrams(y,n) if len(y) >= n else [y] for y in x] for x in wordlist]
+        result = [[item for sublist in x for item in sublist] for x in ng]
+        data[str(n_gram_attr)] = [" ".join(x) for x in result]
+
+    def extract(self, df):
+        self.n_gram('search_term', df, 'search_term_4gram',4)
+
+class ProductTitle4grams:
+    def n_gram(self, attribute, data, n_gram_attr, n):
+        data[str(n_gram_attr)] = data[str(attribute)]
+
+        ngrams = lambda b, n: [b[i:i+n] for i in range(len(b)-n+1)]
+        wordlist = [x.split() for x in data[str(attribute)]]
+
+        ng = [[ngrams(y,n) if len(y) >= n else [y] for y in x] for x in wordlist]
+        result = [[item for sublist in x for item in sublist] for x in ng]
+        data[str(n_gram_attr)] = [" ".join(x) for x in result]
+
+    def extract(self, df):
+        self.n_gram('product_title', df, 'product_title_4gram', 4)        
+        
+class ProductTitle2grams:
+    def n_gram(self, attribute, data, n_gram_attr, n):
+        data[str(n_gram_attr)] = data[str(attribute)]
+
+        ngrams = lambda b, n: [b[i:i+n] for i in range(len(b)-n+1)]
+        wordlist = [x.split() for x in data[str(attribute)]]
+
+        ng = [[ngrams(y,n) if len(y) >= n else [y] for y in x] for x in wordlist]
+        result = [[item for sublist in x for item in sublist] for x in ng]
+        data[str(n_gram_attr)] = [" ".join(x) for x in result]
+
+    def extract(self, df):
+        self.n_gram('product_title', df, 'product_title_2gram', 2)
+
+class ProductTitle3grams:
+    def n_gram(self, attribute, data, n_gram_attr, n):
+        data[str(n_gram_attr)] = data[str(attribute)]
+
+        ngrams = lambda b, n: [b[i:i+n] for i in range(len(b)-n+1)]
+        wordlist = [x.split() for x in data[str(attribute)]]
+
+        ng = [[ngrams(y,n) if len(y) >= n else [y] for y in x] for x in wordlist]
+        result = [[item for sublist in x for item in sublist] for x in ng]
+        data[str(n_gram_attr)] = [" ".join(x) for x in result]
+
+    def extract(self, df):
+        self.n_gram('product_title', df, 'product_title_3gram', 3)
