@@ -55,7 +55,14 @@ class FeatureExtractor:
             'Ratio of 3-grams matching in Title': N.Ratio3gramsInQueryMatchInTitle(),
             'Ratio of 4-grams matching in Title': N.Ratio4gramsInQueryMatchInTitle(),
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
-            'Ratio of Numbers': N.RatioNumbersInQuery(),
+            'Amount of Numericals': N.AmountOfNumericalCharactersInQuery(),
+
+            'Percent of Query Characters numerical': N.PercOfQueryTokensNumerical(),
+            'Percent of Query characters numerical': N.PercOfQueryCharsNumerical(),
+            'Percent of Query characters alphabetical': N.PercOfQueryCharsAlphabetical(),
+            'Percent of Query characters spaces': N.PercOfQueryCharsSpaces(),
+
+            'Percent of Query Characters special': N.PercOfQueryCharsOther(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
             'Query: Counts of Characters per Class': N.CountsOfCharsPerClass(),
             'Query: Counts of Tokens per Class': N.CountsOfTokensPerClass(),
