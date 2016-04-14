@@ -273,6 +273,7 @@ y_train = get_target_values(df_train, df_test)
 net = Network(df_x_train, y_train)
 
 w = run_cross_val(df_train,net, 5, find_weights=True)
+
 print("Avg of weights: ",w)
 
 run_cross_val(df_train, 5, w=w)

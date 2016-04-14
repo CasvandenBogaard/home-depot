@@ -71,10 +71,12 @@ class FeatureExtractor:
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
             'Last word in query title':N.LastWordInTitle(),
             'First word in query title':N.FirstWordInTitle(),
-
             'Average Term Frequency of Query': N.AverageTermFrequency(),
             'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
             'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
+            'Description Lengths': N.DescriptionLength(),
+            'Product Title Lengths': N.TitleLength(),
+            'Relative Lengths': N.RelativeLengths(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):
@@ -97,7 +99,16 @@ class FeatureExtractor:
         if saveResults and os.path.isfile('data/features/numerical_{}.csv'.format(self.name)):
             if (self.isVerbose):
                 print("Numerical feature extraction: reading from saved file")
-            return pd.read_csv('data/features/numerical_{}.csv'.format(self.name))
+            ndf = pd.read_csv('data/features/numerical_{}.csv'.format(self.name))
+
+            for key in self.getFeaturesToRefresh():
+                extractor = self.numericalExtractors[key]
+                if (self.isVerbose):
+                    print("Numerical feature refreshing: {}".format(key))
+                extractor.extract(df, df_un, ndf)
+
+            ndf.to_csv('data/features/numerical_{}.csv'.format(self.name), index=False)
+            return ndf
 
         ndf = pd.DataFrame()
         for key, extractor in self.numericalExtractors.items():
@@ -109,3 +120,10 @@ class FeatureExtractor:
             ndf.to_csv('data/features/numerical_{}.csv'.format(self.name))
 
         return ndf
+
+    def getFeaturesToRefresh(_self):
+        return [
+            # "Average Term Frequency of Query",
+            # "Minimum Term Frequency of Query",
+            # "Maximum Term Frequency of Query",
+        ]
