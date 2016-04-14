@@ -43,13 +43,12 @@ class FeatureExtractor:
             'Brand Match': N.BrandMatch(),
             'Color Overlap': N.ColorOverlap(),
             'Color Match': N.ColorMatch(),
-            'Number of Words': N.QueryLength(),
+            'Number of Words': N.QueryLengthByTokens(),
             'Number of 2-grams': N.QueryLength2gram(),
             'Number of 3-grams': N.QueryLength3gram(),
             'Number of 4-grams': N.QueryLength4gram(),
-            'Number of Characters': N.QueryCharachterLength(),
             'Query Length by Tokens': N.QueryLengthByTokens(),            
-            'Query Length by Characters': N.QueryLengthByCharachters(),
+            'Query Length by Characters': N.QueryLengthByCharacters(),
             'Average length of word': N.QueryAverageTokenLength(),
             'Ratio of 2-grams matching in Title': N.Ratio2gramsInQueryMatchInTitle(),
             'Ratio of 3-grams matching in Title': N.Ratio3gramsInQueryMatchInTitle(),
@@ -72,8 +71,10 @@ class FeatureExtractor:
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
             'Last word in query title':N.LastWordInTitle(),
             'First word in query title':N.FirstWordInTitle(),
+
             'Average Term Frequency of Query': N.AverageTermFrequency(),
             'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
+            'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):

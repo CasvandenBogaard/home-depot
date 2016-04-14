@@ -8,25 +8,16 @@ import re
 import pickle
 import numpy as np
 
+
+########
+### Q-P PAIR FEATURES
+######## 
+
+# title 
 class TitleOverlap:
     def extract(self, tdf, tdf_un, ndf):
         ndf['title_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_title'])]
 
-class DescriptionOverlap:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['descr_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
-
-class DescriptionOverlapJaccard:
-    def extract(self, tdf, tdf_un, ndf):
-        tmp = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
-        ndf['descr_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(tdf['search_term'], tdf['product_description'], tmp)]
-
-class DescriptionMatch:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['description_match'] = [1 if x in y else 0 for x,y in zip(tdf['search_term'], tdf['product_description'])]
-
-        
-        
 class TitleOverlap2gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['title_overlap_2gram'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term_2gram'], tdf['product_title_2gram'])]
@@ -67,6 +58,23 @@ class TitleMatch4gram:
         ndf['title_match_4gram'] = [1 if x in y else 0 for x,y in zip(tdf['search_term_4gram'], tdf['product_title_4gram'])]
         
 
+# description
+
+class DescriptionOverlap:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['descr_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
+
+class DescriptionOverlapJaccard:
+    def extract(self, tdf, tdf_un, ndf):
+        tmp = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
+        ndf['descr_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(tdf['search_term'], tdf['product_description'], tmp)]
+
+class DescriptionMatch:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['description_match'] = [1 if x in y else 0 for x,y in zip(tdf['search_term'], tdf['product_description'])]
+
+
+# misc
 
 class BrandMatch:
     def extract(self, tdf, tdf_un, ndf):
@@ -85,20 +93,23 @@ class QueryLengthByTokens:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_token_length'] = [len(x.split()) for x in tdf['search_term']]
 
+
 class QueryLength2gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_2gram'] = [len(x.split()) for x in tdf['search_term_2gram']]
 
+# query feature
 class QueryLength3gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_3gram'] = [len(x.split()) for x in tdf['search_term_3gram']]
-        
+
+# query feature        
 class QueryLength4gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_4gram'] = [len(x.split()) for x in tdf['search_term_4gram']]
 
 # query feature
-class QueryLengthByCharachters:
+class QueryLengthByCharacters:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_character_length'] = [len(x) for x in tdf['search_term']]
 
@@ -126,7 +137,6 @@ class Ratio4gramsInQueryMatchInTitle:
         query_4gram_length = [len(x.split()) for x in tdf['search_term_4gram']]
         title_4gram_overlap = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term_4gram'], tdf['product_title_4gram'])]
         ndf['total_match_title'] = [math.floor(x/y) for x,y in zip(title_4gram_overlap, query_4gram_length)]
-        
         
 # query feature
 class AmountOfNumbersInQuery:
@@ -225,7 +235,8 @@ def countothers(x):
 # query feature
 ## absolute occurrence of character class (numerical, alphabetical, spaces, others (signs etc.))
 class CountsOfCharsPerClass:
-    def extract(self, tdf,tdf_un, ndf):
+
+    def extract(self, tdf, tdf_un, ndf):
         ndf['count_of_num_chars'] = [countdigits(x) for x in tdf['search_term']]
         ndf['count_of_alph_chars'] = [countchars(x) for x in tdf['search_term']]
         ndf['count_of_space_chars'] = [countspaces(x) for x in tdf['search_term']]
@@ -234,7 +245,7 @@ class CountsOfCharsPerClass:
 # query feature
 ## absolute occurrence of token class (numerical only, alphabethical only, mixed only)
 class CountsOfTokensPerClass:
-    def extract(self, tdf,tdf_un, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['count_of_pure_num_tokens'] = [countdigits(nltk.word_tokenize((x))) for x in tdf['search_term']]
         ndf['count_of_pure_alph_tokens'] = [countchars(nltk.word_tokenize((x))) for x in tdf['search_term']]
         ndf['count_of_other_tokens'] = [countothers(nltk.word_tokenize((x))) for x in tdf['search_term']]
@@ -255,7 +266,7 @@ def alpha_num_ratio(x):
 # ratio of alphabetical vs numerical characters
 class RatioAlphaVsNumInQueryChars:
 
-    def extract(self, tdf,tdf_un, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_alpha_num_ratio_chars'] = [alpha_num_ratio(x) for x in tdf['search_term']]
 
 
@@ -263,7 +274,7 @@ class RatioAlphaVsNumInQueryChars:
 # # ratio of alphabetical vs numerical characters
 # class RatioAlphaVsNumInQueryChars:
 
-#     def extract(self, tdf, ndf):
+#     def extract(self, tdf, tdf_un, ndf):
 
 #         numericals = ndf['count_of_num_chars']
 #         if numericals == 0:
@@ -294,7 +305,7 @@ class RatioAlphasVsSpacesInQuery:
             alpha_space_ratio_var = (alphas)/(spaces)
             return alpha_space_ratio_var
 
-    def extract(self, tdf,tdf_un, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_alpha_space_ratio'] = [self.alpha_space_ratio("".join(x)) for x in tdf['search_term']]
 
 # query feature
@@ -334,7 +345,8 @@ class RatioWordsVsNonwords:
         ratio = (words + 1)/(nonwords + 1)
         return ratio
     
-    def extract(self, tdf,tdf_un, ndf):
+
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_words_nonwords_ratio'] = [self.words_nonwords_ratio(x) for x in tdf['search_term']]
 
 
@@ -349,7 +361,7 @@ class LengthNonSpaceNonAlphaNonNumericalChars:
         numericals, alphas, spaces, others = charcount(x)
         return others
 
-    def extract(self, tdf,tdf_un, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_nonspacenonalphanonnum_chars'] = [self.count_nonspacenonalphanonnumerical(x) for x in tdf['search_term']]
 
 # query feature
@@ -360,13 +372,15 @@ class LengthNonSpaceNonAlphaNonNumericalTokens:
         numericals, alphas, spaces, others = charcount(x)
         return others
 
-    def extract(self, tdf,tdf_un, ndf):
+
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_nonspacenonalphanonnum_tokens'] = [self.count_nonspacenonalphanonnumerical(nltk.word_tokenize((x))) for x in tdf['search_term']]
 
 # query feature
 # number of nouns in query by nltk POS-tags
 class NumberOfNouns:
-    def extract(self, tdf,tdf_un, ndf):
+
+    def extract(self, tdf, tdf_un, ndf):
         sentencelist = [x.split() for x in tdf['search_term']]
         result = nltk.pos_tag_sents(sentencelist)
         nouns = [[word for word,pos in lst if pos in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
