@@ -52,22 +52,22 @@ class ColorMatch:
 
 # query feature
 class QueryLengthByTokens:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_token_length'] = [len(x.split()) for x in tdf['search_term']]
 
 # query feature
 class QueryLengthByNgrams:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_ngram'] = [len(x.split()) for x in tdf['search_term_ngram']]
 
 # query feature
 class QueryLengthByCharachters:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_character_length'] = [len(x) for x in tdf['search_term']]
 
 # query feature
 class QueryAverageTokenLength:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         query_length = [len(x.split()) for x in tdf['search_term']]
         query_char_length = ndf['query_character_length'] = [len(x) for x in tdf['search_term']]
         ndf['query_average_token_length'] = [y/x for x,y in zip(query_length, query_char_length)]
@@ -176,7 +176,7 @@ def countothers(x):
 # query feature
 ## absolute occurrence of character class (numerical, alphabetical, spaces, others (signs etc.))
 class CountsOfCharsPerClass:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['count_of_num_chars'] = [countdigits(x) for x in tdf['search_term']]
         ndf['count_of_alph_chars'] = [countchars(x) for x in tdf['search_term']]
         ndf['count_of_space_chars'] = [countspaces(x) for x in tdf['search_term']]
@@ -185,7 +185,7 @@ class CountsOfCharsPerClass:
 # query feature
 ## absolute occurrence of token class (numerical only, alphabethical only, mixed only)
 class CountsOfTokensPerClass:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['count_of_pure_num_tokens'] = [countdigits(nltk.word_tokenize((x))) for x in tdf['search_term']]
         ndf['count_of_pure_alph_tokens'] = [countchars(nltk.word_tokenize((x))) for x in tdf['search_term']]
         ndf['count_of_other_tokens'] = [countothers(nltk.word_tokenize((x))) for x in tdf['search_term']]
@@ -206,7 +206,7 @@ def alpha_num_ratio(x):
 # ratio of alphabetical vs numerical characters
 class RatioAlphaVsNumInQueryChars:
 
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_alpha_num_ratio_chars'] = [alpha_num_ratio(x) for x in tdf['search_term']]
 
 
@@ -214,7 +214,7 @@ class RatioAlphaVsNumInQueryChars:
 # # ratio of alphabetical vs numerical characters
 # class RatioAlphaVsNumInQueryChars:
 
-#     def extract(self, tdf, ndf):
+#     def extract(self, tdf, tdf_un, ndf):
 
 #         numericals = ndf['count_of_num_chars']
 #         if numericals == 0:
@@ -227,7 +227,7 @@ class RatioAlphaVsNumInQueryChars:
 # ratio of only-alphabetical vs only-numerical tokens
 class RatioAlphaVsNumInQueryTokens:
 
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_alpha_num_ratio_tokens'] = [alpha_num_ratio(nltk.word_tokenize((x))) for x in tdf['search_term']]
 
 # ratio of only-alphabetical vs mixed?
@@ -245,7 +245,7 @@ class RatioAlphasVsSpacesInQuery:
             alpha_space_ratio_var = (alphas)/(spaces)
             return alpha_space_ratio_var
 
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_alpha_space_ratio'] = [self.alpha_space_ratio("".join(x)) for x in tdf['search_term']]
 
 # query feature
@@ -260,7 +260,7 @@ class RatioNumericalsVsSpacesInQuery:
             num_spaces_ratio = (numericals)/(spaces)
             return num_spaces_ratio
 
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_num_space_ratio'] = [self.num_spaces_ratio("".join(x)) for x in tdf['search_term']]
 
 # query feature
@@ -285,7 +285,7 @@ class RatioWordsVsNonwords:
         ratio = (words + 1)/(nonwords + 1)
         return ratio
     
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['query_words_nonwords_ratio'] = [self.words_nonwords_ratio(x) for x in tdf['search_term']]
 
 
@@ -300,8 +300,8 @@ class LengthNonSpaceNonAlphaNonNumericalChars:
         numericals, alphas, spaces, others = charcount(x)
         return others
 
-    def extract(self, tdf, ndf):
-        ndf['query_length_nonspacenonalphanonnum_chars'] = [self.nonspacenonalphanonnumerical(x) for x in tdf['search_term']]
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['query_length_nonspacenonalphanonnum_chars'] = [self.count_nonspacenonalphanonnumerical(x) for x in tdf['search_term']]
 
 # query feature
 # absolute number of mixed (not purely-alphabetical or purely-numerical) tokens in query
@@ -311,13 +311,13 @@ class LengthNonSpaceNonAlphaNonNumericalTokens:
         numericals, alphas, spaces, others = charcount(x)
         return others
 
-    def extract(self, tdf, ndf):
-        ndf['query_length_nonspacenonalphanonnum_tokens'] = [self.nonspacenonalphanonnumerical(nltk.word_tokenize((x))) for x in tdf['search_term']]
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['query_length_nonspacenonalphanonnum_tokens'] = [self.count_nonspacenonalphanonnumerical(nltk.word_tokenize((x))) for x in tdf['search_term']]
 
 # query feature
 # number of nouns in query by nltk POS-tags
 class NumberOfNouns:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         sentencelist = [x.split() for x in tdf['search_term']]
         result = nltk.pos_tag_sents(sentencelist)
         nouns = [[word for word,pos in lst if pos in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
