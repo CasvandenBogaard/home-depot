@@ -40,6 +40,8 @@ class FeatureExtractor:
             'Number of Nouns': N.NumberOfNouns(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
             'Number of Vowels in Title': N.NumberOfVowelsTitle(),
+            'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
+            
         }
 
     def extractTextualFeatures(self, df, saveResults=False):

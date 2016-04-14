@@ -131,8 +131,14 @@ class AveragePositionMatchedSearchTerms:
     def extract(self, tdf, tdf_un, ndf):
         positions = [np.mean([a for a,b in enumerate(y.split()) if (b in x.split())]) for x,y in zip(tdf['search_term'], tdf['product_title'])]
         
-        ndf['dist_matched_terms'] = [0 if math.isnan(x) else x for x in positions]
+        ndf['avg_pos_terms'] = [0 if math.isnan(x) else x for x in positions]
         
+
+class DistanceMatchedSearchTerms:
+    def extract(self, tdf, tdf_un, ndf):
+        positions = [([a for a,b in enumerate(y.split()) if (b in x.split())]) for x,y in zip(tdf['search_term'], tdf['product_title'])]
+        
+        ndf['dist_matched_terms'] = [0 if len(x)<2 else np.abs(x[0]-x[1]) for x in positions]        
         
         
         
