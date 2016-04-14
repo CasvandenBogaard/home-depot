@@ -18,6 +18,12 @@ class FeatureExtractor:
             'Colors': T.Colors(attributeDF)
         }
         self.numericalExtractors = {
+            'Average position of matched query words': N.AveragePositionMatchedSearchTerms(),
+            'Title Overlap': N.TitleOverlap(),
+            'Word2Vec Similarity of Query and PTitle': N.Word2VecSimilarity(),
+            'Word2Vec Similarity Pretrained of Query and PTitle': N.Word2VecSimilarityPretrained(),
+            'Word2Vec Summed Similarity': N.Word2vecSummedSimilarity(),
+            'Word2Vec Summed Similarity Pretrained': N.Word2VecSummedSimilarityPretrained(),
             'Description Overlap': N.DescriptionOverlap(),
             'Description Overlap Jaccard': N.DescriptionOverlapJaccard(),
             'Description Match': N.DescriptionMatch(),
@@ -36,8 +42,6 @@ class FeatureExtractor:
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
             'Ratio of Numbers': N.RatioNumbersInQuery(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
-            'Word2Vec Similarity of Query and PTitle': N.Word2VecSimilarity(),
-            'Word2Vec Similarity Pretrained of Query and PTitle': N.Word2VecSimilarityPretrained(),
             'Query: Counts of Characters per Class': N.CountsOfCharsPerClass(),
             'Query: Counts of Tokens per Class': N.CountsOfTokensPerClass(),
             'Ratio of alphabeticals to numericals in query (in terms of characters)': N.RatioAlphaVsNumInQueryChars(),
@@ -50,6 +54,10 @@ class FeatureExtractor:
             'Count of Nouns in Query': N.NumberOfNouns(),
             'Number of Vowels in Search Term': N.NumberOfVowelsSearchTerm(),
             'Number of Vowels in Title': N.NumberOfVowelsTitle(),
+            'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
+            'Average Term Frequency of Query': N.AverageTermFrequency(),
+            'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
+            'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):
