@@ -1,3 +1,5 @@
+## feature_extraction/extraction.py
+
 import pandas as pd
 import feature_extraction.textual as T
 import feature_extraction.numerical as N
@@ -16,7 +18,6 @@ class FeatureExtractor:
             'Colors': T.Colors(attributeDF)
         }
         self.numericalExtractors = {
-            'Word2Vec Similarity': N.Word2VecSimilarity(),
             'Description Overlap': N.DescriptionOverlap(),
             'Description Overlap Jaccard': N.DescriptionOverlapJaccard(),
             'Description Match': N.DescriptionMatch(),
@@ -26,15 +27,25 @@ class FeatureExtractor:
             'Brand Match': N.BrandMatch(),
             'Color Overlap': N.ColorOverlap(),
             'Color Match': N.ColorMatch(),
-            'Number of Words': N.QueryLength(),
-            'Number of 3-grams': N.QueryLengthNgram(),
-            'Number of Characters': N.QueryCharachterLength(),
-            'Average length of word': N.QueryAverageWordLength(),
+            'Query Length by Tokens': N.QueryLengthByTokens(),
+            'Query Length by 3-grams': N.QueryLengthByNgrams(),
+            'Query Length by Characters': N.QueryLengthByCharachter(),
+            'Average length of word': N.QueryAverageTokenLength(),
             'Ratio of 3-grams matching in Title': N.RatioNgramsInQueryMatchInTitle(),
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
             'Ratio of Numbers': N.RatioNumbersInQuery(),
-            'Number of Nouns': N.NumberOfNouns(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
+            'Word2Vec Similarity of Query and PTitle': N.Word2VecSimilarity(),
+            'Query: Counts of Characters per Class': N.CountsOfCharsPerClass(),
+            'Query: Counts of Tokens per Class': N.CountsOfTokensPerClass(),
+            'Ratio of alphabeticals to numericals in query (in terms of characters)': N.RatioAlphaVsNumInQueryChars(),
+            'Ratio of alphabeticals to numericals in query (in terms of tokens)': N.RatioAlphaVsNumInQueryTokens(),
+            'Ratio of alphabeticals to spaces in query': N.RatioAlphasVsSpacesInQuery(),
+            'Ratio of numericals to spaces in query': N.RatioNumericalsVsSpacesInQuery(),
+            'Ratio of words to nonwords in query': N.RatioWordsVsNonwords(),
+            'Count of special (non-alphabetical, non-numerical, non-space) chars in Q': N.LengthNonSpaceNonAlphaNonNumericalChars(),
+            'Count of non-purely alpha/numerical/space tokens in Q': N.LengthNonSpaceNonAlphaNonNumericalTokens(),
+            'Count of Nouns in Query': N.NumberOfNouns(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):
