@@ -16,6 +16,8 @@ class FeatureExtractor:
             'Colors': T.Colors(attributeDF)
         }
         self.numericalExtractors = {
+            'Average position of matched query words': N.AveragePositionMatchedSearchTerms(),
+            'Title Overlap': N.TitleOverlap(),
             'Word2Vec Similarity': N.Word2VecSimilarity(),
             'Word2Vec Similarity Pretrained': N.Word2VecSimilarityPretrained(),
             'Description Overlap': N.DescriptionOverlap(),

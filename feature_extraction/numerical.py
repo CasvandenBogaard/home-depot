@@ -2,6 +2,12 @@ import math
 import nltk
 import os
 import gensim.models.word2vec as w2v
+import numpy as np
+
+
+class TitleOverlap:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['title_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_title'])]
 
 class DescriptionOverlap:
     def extract(self, tdf, tdf_un, ndf):
@@ -120,4 +126,13 @@ class NumberOfVowelsTitle:
     def extract(self, tdf, tdf_un, ndf):
         ndf['num_vovels_title'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['product_title']]
 
-
+        
+class AveragePositionMatchedSearchTerms:
+    def extract(self, tdf, tdf_un, ndf):
+        positions = [np.mean([a for a,b in enumerate(y.split()) if (b in x.split())]) for x,y in zip(tdf['search_term'], tdf['product_title'])]
+        
+        ndf['dist_matched_terms'] = [0 if math.isnan(x) else x for x in positions]
+        
+        
+        
+        
