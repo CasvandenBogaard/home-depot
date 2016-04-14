@@ -9,8 +9,12 @@ class FeatureExtractor:
         self.isVerbose = verbose
         self.name = name
         self.textualExtractors = {
-            'Search Term Ngrams': T.SearchTermNgrams(),
-            'Product Title Ngrams': T.ProductTitleNgrams(),
+            'Search Term 2grams': T.SearchTerm2grams(),
+            'Search Term 3grams': T.SearchTerm3grams(),
+            'Search Term 4grams': T.SearchTerm4grams(),
+            'Product Title 2grams': T.ProductTitle2grams(),
+            'Product Title 3grams': T.ProductTitle3grams(),
+            'Product Title 4grams': T.ProductTitle4grams(),
             'Brand Names': T.BrandNames(attributeDF),
             'Product Description': T.ProductDescription(descriptionDF),
             'Colors': T.Colors(attributeDF)
@@ -23,17 +27,25 @@ class FeatureExtractor:
             'Description Overlap': N.DescriptionOverlap(),
             'Description Overlap Jaccard': N.DescriptionOverlapJaccard(),
             'Description Match': N.DescriptionMatch(),
-            'Title 3-gram Overlap': N.TitleOverlapNgram(),
-            'Title 3-gram Overlap Jaccard': N.TitleOverlapNgramJaccard(),
-            'Title 3-gram Match': N.TitleMatchNgram(),
+            'Title 2-gram Overlap': N.TitleOverlap2gram(),
+            'Title 2-gram Overlap Jaccard': N.TitleOverlap2gramJaccard(),
+            'Title 2-gram Match': N.TitleMatch2gram(),
+            'Title 3-gram Overlap': N.TitleOverlap3gram(),
+            'Title 3-gram Overlap Jaccard': N.TitleOverlap3gramJaccard(),
+            'Title 3-gram Match': N.TitleMatch3gram(),
+            'Title 4-gram Overlap': N.TitleOverlap4gram(),
+            'Title 4-gram Overlap Jaccard': N.TitleOverlap4gramJaccard(),
+            'Title 4-gram Match': N.TitleMatch4gram(),
             'Brand Match': N.BrandMatch(),
             'Color Overlap': N.ColorOverlap(),
             'Color Match': N.ColorMatch(),
             'Number of Words': N.QueryLength(),
-            'Number of 3-grams': N.QueryLengthNgram(),
+            'Number of 2-grams': N.QueryLength2gram(),
+            'Number of 3-grams': N.QueryLength3gram(),
+            'Number of 4-grams': N.QueryLength4gram(),
             'Number of Characters': N.QueryCharachterLength(),
             'Average length of word': N.QueryAverageWordLength(),
-            'Ratio of 3-grams matching in Title': N.RatioNgramsInQueryMatchInTitle(),
+            'Ratio of 3-grams matching in Title': N.Ratio2gramsInQueryMatchInTitle(),
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
             'Ratio of Numbers': N.RatioNumbersInQuery(),
             'Number of Vowels in Search Term': N.NumberOfVowelsSearchTerm(),
@@ -41,6 +53,9 @@ class FeatureExtractor:
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
             'Number of Vowels in Title': N.NumberOfVowelsTitle(),
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
+            'Last word in query title':N.LastWordInTitle(),
+            'First word in query title':N.FirstWordInTitle(),
+            
             
         }
 
