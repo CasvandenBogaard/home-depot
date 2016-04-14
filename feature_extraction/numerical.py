@@ -2,17 +2,12 @@ import math
 import nltk
 import os
 import gensim.models.word2vec as w2v
-<<<<<<< 520a89f835998a301271232d81b2e92370181bce
+import pickle
 import numpy as np
-
 
 class TitleOverlap:
     def extract(self, tdf, tdf_un, ndf):
         ndf['title_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_title'])]
-=======
-import pickle
-import numpy as np
->>>>>>> Add document frequency
 
 class DescriptionOverlap:
     def extract(self, tdf, tdf_un, ndf):
