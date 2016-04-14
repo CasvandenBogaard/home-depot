@@ -76,7 +76,7 @@ class RatioNumbersInQuery:
         ndf['ratio_numbers'] = [y/x for x,y in zip(query_char_length, amount_numbers)]
 
 class NumberOfNouns:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         sentencelist = [x.split() for x in tdf['search_term']]
         result = nltk.pos_tag_sents(sentencelist)
         nouns = [[word for word,pos in lst if pos in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
@@ -113,11 +113,11 @@ class Word2VecSimilarityPretrained:
             ]
 
 class NumberOfVowelsSearchTerm:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['num_vovels_search_term'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['search_term']]
 
 class NumberOfVowelsTitle:
-    def extract(self, tdf, ndf):
+    def extract(self, tdf, tdf_un, ndf):
         ndf['num_vovels_title'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['product_title']]
 
 
