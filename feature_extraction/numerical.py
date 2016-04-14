@@ -8,25 +8,16 @@ import re
 import pickle
 import numpy as np
 
+
+########
+### Q-P PAIR FEATURES
+######## 
+
+# title 
 class TitleOverlap:
     def extract(self, tdf, tdf_un, ndf):
         ndf['title_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_title'])]
 
-class DescriptionOverlap:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['descr_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
-
-class DescriptionOverlapJaccard:
-    def extract(self, tdf, tdf_un, ndf):
-        tmp = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
-        ndf['descr_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(tdf['search_term'], tdf['product_description'], tmp)]
-
-class DescriptionMatch:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['description_match'] = [1 if x in y else 0 for x,y in zip(tdf['search_term'], tdf['product_description'])]
-
-        
-        
 class TitleOverlap2gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['title_overlap_2gram'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term_2gram'], tdf['product_title_2gram'])]
@@ -67,6 +58,23 @@ class TitleMatch4gram:
         ndf['title_match_4gram'] = [1 if x in y else 0 for x,y in zip(tdf['search_term_4gram'], tdf['product_title_4gram'])]
         
 
+# description
+
+class DescriptionOverlap:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['descr_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
+
+class DescriptionOverlapJaccard:
+    def extract(self, tdf, tdf_un, ndf):
+        tmp = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
+        ndf['descr_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(tdf['search_term'], tdf['product_description'], tmp)]
+
+class DescriptionMatch:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['description_match'] = [1 if x in y else 0 for x,y in zip(tdf['search_term'], tdf['product_description'])]
+
+
+# misc
 
 class BrandMatch:
     def extract(self, tdf, tdf_un, ndf):
@@ -85,15 +93,17 @@ class QueryLengthByTokens:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_token_length'] = [len(x.split()) for x in tdf['search_term']]
 
-
+# query feature
 class QueryLength2gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_2gram'] = [len(x.split()) for x in tdf['search_term_2gram']]
 
+# query feature
 class QueryLength3gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_3gram'] = [len(x.split()) for x in tdf['search_term_3gram']]
-        
+
+# query feature        
 class QueryLength4gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_length_4gram'] = [len(x.split()) for x in tdf['search_term_4gram']]
@@ -127,7 +137,6 @@ class Ratio4gramsInQueryMatchInTitle:
         query_4gram_length = [len(x.split()) for x in tdf['search_term_4gram']]
         title_4gram_overlap = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term_4gram'], tdf['product_title_4gram'])]
         ndf['total_match_title'] = [math.floor(x/y) for x,y in zip(title_4gram_overlap, query_4gram_length)]
-        
         
 # query feature
 class AmountOfNumbersInQuery:
@@ -264,7 +273,7 @@ class RatioAlphaVsNumInQueryChars:
 # # ratio of alphabetical vs numerical characters
 # class RatioAlphaVsNumInQueryChars:
 
-#     def extract(self, tdf, ndf):
+#     def extract(self, tdf, tdf_un, ndf):
 
 #         numericals = ndf['count_of_num_chars']
 #         if numericals == 0:
