@@ -45,10 +45,6 @@ class ColorMatch:
     def extract(self, tdf, tdf_un, ndf):
         ndf['color_match'] = [1 if str(y) in x else 0 for x,y in zip(tdf['search_term'], tdf['colors'])]
 
-<<<<<<< HEAD
-
-
-
 # query feature
 class QueryLengthByTokens:
     def extract(self, tdf, ndf):
@@ -67,22 +63,6 @@ class QueryLengthByCharachters:
 # query feature
 class QueryAverageTokenLength:
     def extract(self, tdf, ndf):
-=======
-class QueryLength:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['query_length'] = [len(x.split()) for x in tdf['search_term']]
-
-class QueryLengthNgram:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['query_length_ngram'] = [len(x.split()) for x in tdf['search_term_ngram']]
-
-class QueryCharachterLength:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['query_character_length'] = [len(x) for x in tdf['search_term']]
-
-class QueryAverageWordLength:
-    def extract(self, tdf, tdf_un, ndf):
->>>>>>> 92f2492e1a532bcdaf1db7663bc32a5e21b5b502
         query_length = [len(x.split()) for x in tdf['search_term']]
         query_char_length = ndf['query_character_length'] = [len(x) for x in tdf['search_term']]
         ndf['query_average_token_length'] = [y/x for x,y in zip(query_length, query_char_length)]
@@ -106,17 +86,7 @@ class RatioNumbersInQuery:
         amount_numbers = [sum(s.isdigit() for s in x.split()) for x in tdf['search_term']]
         ndf['ratio_numbers'] = [y/x for x,y in zip(query_char_length, amount_numbers)]
 
-<<<<<<< HEAD
 # was spelling-correction performed?
-=======
-class NumberOfNouns:
-    def extract(self, tdf, tdf_un, ndf):
-        sentencelist = [x.split() for x in tdf['search_term']]
-        result = nltk.pos_tag_sents(sentencelist)
-        nouns = [[word for word,pos in lst if pos in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
-        ndf['number_of_nouns'] = [int(len(x)) for x in nouns]
-
->>>>>>> 92f2492e1a532bcdaf1db7663bc32a5e21b5b502
 class SpellingCorrectionPerformed:
     def extract(self, tdf, tdf_un, ndf):
         ndf['spell_corrected'] = [x for x in tdf['spell_corrected']]
@@ -147,9 +117,6 @@ class Word2VecSimilarityPretrained:
                 )
                 for x,y in zip(tdf_un['search_term'], tdf_un['product_title'])
             ]
-
-<<<<<<< HEAD
-
 
 ##
 # these functions are used in the classes below
@@ -321,19 +288,19 @@ class NumberOfNouns:
         sentencelist = [x.split() for x in tdf['search_term']]
         result = nltk.pos_tag_sents(sentencelist)
         nouns = [[word for word,pos in lst if pos in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
-
         ndf['number_of_nouns'] = [int(len(x)) for x in nouns]
+
 
 # query feature
 # number of adjectives in query? etc etc (other POS-tags)
-=======
+
+
+# query feature
 class NumberOfVowelsSearchTerm:
     def extract(self, tdf, tdf_un, ndf):
         ndf['num_vovels_search_term'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['search_term']]
 
+# title feature
 class NumberOfVowelsTitle:
     def extract(self, tdf, tdf_un, ndf):
         ndf['num_vovels_title'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['product_title']]
-
-
->>>>>>> 92f2492e1a532bcdaf1db7663bc32a5e21b5b502
