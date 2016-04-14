@@ -34,8 +34,10 @@ class FeatureExtractor:
             'Ratio of 3-grams matching in Title': N.RatioNgramsInQueryMatchInTitle(),
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
             'Ratio of Numbers': N.RatioNumbersInQuery(),
+            'Number of Vowels in Search Term': N.NumberOfVowelsSearchTerm(),
             'Number of Nouns': N.NumberOfNouns(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
+            'Number of Vowels in Title': N.NumberOfVowelsTitle(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):

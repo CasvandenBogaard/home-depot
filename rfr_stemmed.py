@@ -76,8 +76,10 @@ def train_classifiers(x_train, y_train):
     #x_feats = keep_features(x_train, features)
     #clf_rfr.fit(x_feats, y_train)
     
+
     #clfs.append(clf_rfr)
     #clf_feats.append(features)
+    
     
     #Random forest
     #Kaggle score: 0.47834
@@ -88,7 +90,8 @@ def train_classifiers(x_train, y_train):
     
     #clfs.append(clf_rfr2)
     #clf_feats.append(features)
-    
+
+
     #AdaBoost
     #clf_ada = AdaBoostRegressor(n_estimators=200, learning_rate=1)
     #features = []
@@ -160,7 +163,7 @@ def train_classifiers(x_train, y_train):
     #features = []
     #x_feats = keep_features(x_train, features)
     #clf_bag.fit(x_feats, y_train)
-    
+
     #clfs.append(clf_bag)
     #clf_feats.append(features)
     
@@ -246,11 +249,10 @@ else:
     df_attributes = pd.read_csv('data/attributes.csv', encoding="ISO-8859-1")
     df_test = pd.read_csv('data/test.csv', encoding="ISO-8859-1")
 
+fext = FeatureExtractor(df_description, df_attributes, verbose=True, name="train")
 
-fext = FeatureExtractor(df_description, df_attributes, verbose=True)
-
-df_train = fext.extractTextualFeatures(df_train)
-df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed)
+df_train = fext.extractTextualFeatures(df_train, saveResults=True)
+df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed, saveResults=True)
 
 
 w = run_cross_val(df_train, 5, find_weights=True)
