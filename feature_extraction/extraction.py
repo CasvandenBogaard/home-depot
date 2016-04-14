@@ -71,9 +71,12 @@ class FeatureExtractor:
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
             'Last word in query title':N.LastWordInTitle(),
             'First word in query title':N.FirstWordInTitle(),
-            #'Average Term Frequency of Query': N.AverageTermFrequency(),
-            #'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
-            #'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
+            'Average Term Frequency of Query': N.AverageTermFrequency(),
+            'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
+            'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
+            'Description Lengths': N.DescriptionLength(),
+            'Product Title Lengths': N.TitleLength(),
+            'Relative Lengths': N.RelativeLengths(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):

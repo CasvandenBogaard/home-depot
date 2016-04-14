@@ -256,7 +256,6 @@ df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed)
 
 
 w = run_cross_val(df_train, 5, find_weights=True)
-w = [ 0.69897332, 0.30102668]
 print("Avg of weights: ",w)
 
 run_cross_val(df_train, 5, w=w)

@@ -444,3 +444,25 @@ class MaximumTermFrequency:
 
             ndf['max_query_tf'] = [np.max([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]
 
+class DescriptionLength:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['descr_length'] = [len(x.split()) for x in tdf['product_description']]
+        ndf['descr_length_chars'] = [len(x) for x in tdf['product_description']]
+        ndf['descr_av_word_length'] = [y / x for x, y in zip(ndf['descr_length'], ndf['descr_length_chars'])]
+
+class TitleLength:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['title_length'] = [len(x.split()) for x in tdf['product_title']]
+        ndf['title_length_chars'] = [len(x) for x in tdf['product_title']]
+        ndf['title_av_word_length'] = [y / x for x, y in zip(ndf['title_length'], ndf['title_length_chars'])]
+
+class RelativeLengths:
+    def extract(self, tdf, tdf_un, ndf):
+        querylen = [len(x.split()) for x in tdf['search_term']]
+        titlelen = [len(x.split()) for x in tdf['product_title']]
+        descrlen = [len(x.split()) for x in tdf['product_description']]
+
+        ndf['rel_query_title_length'] = [y / x for x, y in zip(querylen, titlelen)]
+        ndf['rel_query_descr_length'] = [y / x for x, y in zip(querylen, descrlen)]
+        ndf['rel_title_descr_length'] = [y / x for x, y in zip(titlelen, descrlen)]
+
