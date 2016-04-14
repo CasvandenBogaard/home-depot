@@ -15,6 +15,7 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from Lasagne_Network import Network
 
+
 def rmse(true, test):
     return mean_squared_error(true, test)**0.5
 
@@ -25,12 +26,14 @@ def get_target_values(train, test):
         return y_train, y_test
     return y_train
 
-def run_cross_val(df_train, K, w):
+def run_cross_val(df_train, K, w=0, find_weights=False):
     N = df_train.shape[0]
 
     # Cross-validation setup
     kf = cross_validation.KFold(N, n_folds=K, shuffle=True)
     avg_rmse = 0.
+    
+    w_avg = []
 
     for train, test in kf:
         train_set = df_train.loc[train]
@@ -42,14 +45,25 @@ def run_cross_val(df_train, K, w):
 
         clfs, clf_feats = train_classifiers(x_train, y_train)
         y_pred = predict_test(clfs, clf_feats, x_test)
+        
+        if find_weights:
+            w = find_ensemble_weights(clfs, y_pred, y_test)
+            
+            if len(w_avg)==0:
+                w_avg = np.array(w)
+            else:
+                w_avg += np.array(w)
+            
         y_pred = np.dot(y_pred, w)
 
         rmse_fold = rmse(y_test, y_pred)
-        print(rmse_fold)
+        print("RMSE: ", rmse_fold)
         avg_rmse += rmse_fold
 
     avg_rmse = avg_rmse/K
     print("Avg rmse: " + str(avg_rmse))
+    
+    return np.array(w_avg)/len(kf)
     
 def train_classifiers(x_train, y_train):    
     clfs = []
@@ -58,13 +72,26 @@ def train_classifiers(x_train, y_train):
     
     #Random forest
     #Kaggle score: 0.47834
-    clf_rfr = RandomForestRegressor(n_estimators=100, max_depth=11, n_jobs=-1)
-    features = []
-    x_feats = keep_features(x_train, features)
-    clf_rfr.fit(x_feats, y_train)
+    #clf_rfr = RandomForestRegressor(n_estimators=100, max_depth=11, n_jobs=-1)
+    #features = []
+    #x_feats = keep_features(x_train, features)
+    #clf_rfr.fit(x_feats, y_train)
     
-    clfs.append(clf_rfr)
-    clf_feats.append(features)
+
+    #clfs.append(clf_rfr)
+    #clf_feats.append(features)
+    
+    
+    #Random forest
+    #Kaggle score: 0.47834
+    #clf_rfr2 = RandomForestRegressor(n_estimators=100, max_depth=11, n_jobs=-1)
+    #features = ['color_match', 'brand_match', 'query_length']
+    #x_feats = keep_features(x_train, features)
+    #clf_rfr2.fit(x_feats, y_train)
+    
+    #clfs.append(clf_rfr2)
+    #clf_feats.append(features)
+
 
     #AdaBoost
     #clf_ada = AdaBoostRegressor(n_estimators=200, learning_rate=1)
@@ -106,7 +133,7 @@ def train_classifiers(x_train, y_train):
     #5NN Regressor
     #Kaggle score: 0.52425
     #clf_knn2 = KNeighborsRegressor(n_neighbors=5)
-    #features = ['word2vec_sim']
+    #features = []
     #x_feats = keep_features(x_train, features)
     #clf_knn2.fit(x_feats, y_train)
     
@@ -214,13 +241,15 @@ def keep_features(x_train, features):
     
         return x_feats
 
-
 # use preprocessing.py if you want to stem
 if (os.path.isdir('data/stemmed')):
     df_train = pd.read_csv('data/stemmed/train.csv', encoding="ISO-8859-1")
     df_description = pd.read_csv('data/stemmed/product_descriptions.csv', encoding="ISO-8859-1")
     df_attributes = pd.read_csv('data/stemmed/attributes.csv', encoding="ISO-8859-1")
     df_test = pd.read_csv('data/stemmed/test.csv', encoding="ISO-8859-1")
+    
+    df_train_unstemmed = pd.read_csv('data/train.csv', encoding="ISO-8859-1")
+    df_test_unstemmed = pd.read_csv('data/test.csv', encoding="ISO-8859-1")
 else:
     df_train = pd.read_csv('data/train.csv', encoding="ISO-8859-1")
     df_description = pd.read_csv('data/product_descriptions.csv', encoding="ISO-8859-1")
@@ -230,31 +259,17 @@ else:
 fext = FeatureExtractor(df_description, df_attributes, verbose=True, name="train")
 
 df_train = fext.extractTextualFeatures(df_train, saveResults=True)
-df_x_train = fext.extractNumericalFeatures(df_train, saveResults=True)
+df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed, saveResults=True)
 
 
-N = len(df_train)
-i_test = list(np.random.choice(range(N), size=int(N*0.2), replace=False))
-i_train = list(set(range(N))-set(i_test))
+w = run_cross_val(df_train, 5, find_weights=True)
+print("Avg of weights: ",w)
 
-train_set = df_train.loc[i_train]
-test_set  = df_train.loc[i_test]
-
-x_train_w = df_x_train.iloc[i_train]
-x_test_w = df_x_train.iloc[i_test]
-y_train_w, y_test_w = get_target_values(train_set, test_set)
-
-clfs, clf_feats = train_classifiers(x_train_w, y_train_w)
-y_pred = predict_test(clfs, clf_feats, x_test_w)
-w = find_ensemble_weights(clfs, y_pred, y_test_w)
-
-
-run_cross_val(df_train, 5, w)
+run_cross_val(df_train, 5, w=w)
 
 
 df_test = fext.extractTextualFeatures(df_test)
-x_test  = fext.extractNumericalFeatures(df_test)
-
+x_test  = fext.extractNumericalFeatures(df_test, df_test_unstemmed)
 
 
 x_train = df_x_train
@@ -262,10 +277,10 @@ x_train = df_x_train
 id_test = df_test['id']
 
 
-
 y_train = get_target_values(df_train, df_test)
 clfs, clf_feats = train_classifiers(x_train, y_train)
 y_pred = predict_test(clfs, clf_feats, x_test)
 y_pred = np.dot(y_pred, w)
+
 
 pd.DataFrame({"id": id_test, "relevance": y_pred}).to_csv('results/submission.csv', index=False)

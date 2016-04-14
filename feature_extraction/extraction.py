@@ -17,6 +17,7 @@ class FeatureExtractor:
         }
         self.numericalExtractors = {
             'Word2Vec Similarity': N.Word2VecSimilarity(),
+            'Word2Vec Similarity Pretrained': N.Word2VecSimilarityPretrained(),
             'Description Overlap': N.DescriptionOverlap(),
             'Description Overlap Jaccard': N.DescriptionOverlapJaccard(),
             'Description Match': N.DescriptionMatch(),
@@ -55,7 +56,7 @@ class FeatureExtractor:
 
         return df
 
-    def extractNumericalFeatures(self, df, saveResults=False):
+    def extractNumericalFeatures(self, df, df_un, saveResults=False):
         if saveResults and os.path.isfile('data/features/numerical_{}.csv'.format(self.name)):
             if (self.isVerbose):
                 print("Numerical feature extraction: reading from saved file")
@@ -65,7 +66,7 @@ class FeatureExtractor:
         for key, extractor in self.numericalExtractors.items():
             if (self.isVerbose):
                 print("Numerical feature extraction: {}".format(key))
-            extractor.extract(df, ndf)
+            extractor.extract(df, df_un, ndf)
 
         if saveResults:
             ndf.to_csv('data/features/numerical_{}.csv'.format(self.name))
