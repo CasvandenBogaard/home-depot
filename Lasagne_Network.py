@@ -74,7 +74,7 @@ class Network:
         # Add a fully-connected layer of 9 units, using the linear rectifier, and
         # initializing weights with Glorot's scheme (which is the default anyway):
         l_hid1 = lasagne.layers.DenseLayer(
-                l_in, num_units=13,
+                l_in, num_units=21,
                 nonlinearity=lasagne.nonlinearities.sigmoid,
                 W=lasagne.init.GlorotUniform())
 
