@@ -19,7 +19,9 @@ class FeatureExtractor:
             'Average position of matched query words': N.AveragePositionMatchedSearchTerms(),
             'Title Overlap': N.TitleOverlap(),
             'Word2Vec Similarity': N.Word2VecSimilarity(),
+            'Word2Vec Summed Similarity': N.Word2vecSummedSimilarity(),
             'Word2Vec Similarity Pretrained': N.Word2VecSimilarityPretrained(),
+            'Word2Vec Summed Similarity Pretrained': N.Word2VecSummedSimilarityPretrained(),
             'Description Overlap': N.DescriptionOverlap(),
             'Description Overlap Jaccard': N.DescriptionOverlapJaccard(),
             'Description Match': N.DescriptionMatch(),
@@ -41,7 +43,9 @@ class FeatureExtractor:
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
             'Number of Vowels in Title': N.NumberOfVowelsTitle(),
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
-            
+            'Average Term Frequency of Query': N.AverageTermFrequency(),
+            'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
+            'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):
@@ -56,7 +60,7 @@ class FeatureExtractor:
             extractor.extract(df)
 
         if saveResults:
-            df.to_csv('data/features/text_{}.csv'.format(self.name))
+            df.to_csv('data/features/text_{}.csv'.format(self.name), index=False)
 
         return df
 
@@ -73,6 +77,6 @@ class FeatureExtractor:
             extractor.extract(df, df_un, ndf)
 
         if saveResults:
-            ndf.to_csv('data/features/numerical_{}.csv'.format(self.name))
+            ndf.to_csv('data/features/numerical_{}.csv'.format(self.name), index=False)
 
         return ndf

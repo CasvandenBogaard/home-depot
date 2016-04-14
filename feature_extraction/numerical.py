@@ -2,12 +2,17 @@ import math
 import nltk
 import os
 import gensim.models.word2vec as w2v
+<<<<<<< 520a89f835998a301271232d81b2e92370181bce
 import numpy as np
 
 
 class TitleOverlap:
     def extract(self, tdf, tdf_un, ndf):
         ndf['title_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_title'])]
+=======
+import pickle
+import numpy as np
+>>>>>>> Add document frequency
 
 class DescriptionOverlap:
     def extract(self, tdf, tdf_un, ndf):
@@ -104,18 +109,45 @@ class Word2VecSimilarity:
                 for x,y in zip(query_in_model, title_in_model)
             ]
 
+class Word2vecSummedSimilarity:
+    def extract(self, tdf, tdf_un, ndf):
+        if os.path.isfile('data/word2vec/full'):
+            model = w2v.Word2Vec.load('data/word2vec/full')
+            title_in_model = [[q for q in x.split() if q in model.vocab] for x in tdf['product_title']]
+            query_in_model = [[q for q in x.split() if q in model.vocab] for x in tdf['search_term']]
+
+            ndf['word2vec_sumsim'] = [
+                sum(
+                    model.similarity(q, t)
+                    for q in x.split() if q in model.vocab
+                    for t in y.split() if t in model.vocab
+                )
+                for x,y in zip(tdf['search_term'], tdf['product_title'])
+            ]
             
-class Word2VecSimilarityPretrained:
+class Word2VecSummedSimilarityPretrained:
     def extract(self, tdf, tdf_un, ndf):
         if os.path.isfile('data/word2vec/GoogleNews.bin'):
             model = w2v.Word2Vec.load_word2vec_format('data/word2vec/GoogleNews.bin', binary=True)
-            ndf['word2vec_pre'] = [
+            ndf['word2vec_sumpre'] = [
                 sum(
                     model.similarity(q, t)
                     for q in x.split() if q in model.vocab
                     for t in y.split() if t in model.vocab
                 )
                 for x,y in zip(tdf_un['search_term'], tdf_un['product_title'])
+            ]
+
+class Word2VecSimilarityPretrained:
+    def extract(self, tdf, tdf_un, ndf):
+        if os.path.isfile('data/word2vec/GoogleNews.bin'):
+            model = w2v.Word2Vec.load_word2vec_format('data/word2vec/GoogleNews.bin', binary=True)
+            title_in_model = [[q for q in x.split() if q in model.vocab] for x in tdf_un['product_title']]
+            query_in_model = [[q for q in x.split() if q in model.vocab] for x in tdf_un['search_term']]
+
+            ndf['word2vec_pre'] = [
+                model.n_similarity(x, y) if (len(x) > 0 and len(y) > 0) else 0
+                for x, y in zip(query_in_model, title_in_model)
             ]
 
 class NumberOfVowelsSearchTerm:
@@ -126,7 +158,7 @@ class NumberOfVowelsTitle:
     def extract(self, tdf, tdf_un, ndf):
         ndf['num_vovels_title'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['product_title']]
 
-        
+
 class AveragePositionMatchedSearchTerms:
     def extract(self, tdf, tdf_un, ndf):
         positions = [np.mean([a for a,b in enumerate(y.split()) if (b in x.split())]) for x,y in zip(tdf['search_term'], tdf['product_title'])]
@@ -140,5 +172,26 @@ class DistanceMatchedSearchTerms:
         
         ndf['dist_matched_terms'] = [0 if len(x)<2 else np.abs(x[0]-x[1]) for x in positions]        
         
-        
-        
+class AverageTermFrequency:
+    def extract(self, tdf, tdf_un, ndf):
+        with open('data/termcounts/counts.pkl', 'rb') as fcounts, open('data/termcounts/vocab.pkl', 'rb') as fvocab:
+            counts = pickle.load(fcounts)
+            vocab = pickle.load(fvocab)
+
+            ndf['average_query_tf'] = [np.average([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]
+
+class MinimumTermFrequency:
+    def extract(self, tdf, tdf_un, ndf):
+        with open('data/termcounts/counts.pkl', 'rb') as fcounts, open('data/termcounts/vocab.pkl', 'rb') as fvocab:
+            counts = pickle.load(fcounts)
+            vocab = pickle.load(fvocab)
+
+            ndf['min_query_tf'] = [np.min([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]
+
+class MaximumTermFrequency:
+    def extract(self, tdf, tdf_un, ndf):
+        with open('data/termcounts/counts.pkl', 'rb') as fcounts, open('data/termcounts/vocab.pkl', 'rb') as fvocab:
+            counts = pickle.load(fcounts)
+            vocab = pickle.load(fvocab)
+
+            ndf['max_query_tf'] = [np.max([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]

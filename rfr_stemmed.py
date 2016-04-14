@@ -71,14 +71,14 @@ def train_classifiers(x_train, y_train):
     
     #Random forest
     #Kaggle score: 0.47834
-    #clf_rfr = RandomForestRegressor(n_estimators=100, max_depth=11, n_jobs=-1)
-    #features = []
-    #x_feats = keep_features(x_train, features)
-    #clf_rfr.fit(x_feats, y_train)
+    clf_rfr = RandomForestRegressor(n_estimators=300, max_depth=11, n_jobs=-1)
+    features = []
+    x_feats = keep_features(x_train, features)
+    clf_rfr.fit(x_feats, y_train)
     
 
-    #clfs.append(clf_rfr)
-    #clf_feats.append(features)
+    clfs.append(clf_rfr)
+    clf_feats.append(features)
     
     
     #Random forest
@@ -150,7 +150,7 @@ def train_classifiers(x_train, y_train):
     
     #Gradient Boosting
     #Kaggle score: 0.47744
-    clf_gb = GradientBoostingRegressor()
+    clf_gb = GradientBoostingRegressor(n_estimators=300)
     features = []
     x_feats = keep_features(x_train, features)
     clf_gb.fit(x_feats, y_train)
@@ -251,16 +251,17 @@ else:
 
 fext = FeatureExtractor(df_description, df_attributes, verbose=True, name="train")
 
-df_train = fext.extractTextualFeatures(df_train, saveResults=True)
-df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed, saveResults=True)
+df_train = fext.extractTextualFeatures(df_train)
+df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed)
 
 
 w = run_cross_val(df_train, 5, find_weights=True)
+w = [ 0.69897332, 0.30102668]
 print("Avg of weights: ",w)
 
 run_cross_val(df_train, 5, w=w)
 
-
+fext = FeatureExtractor(df_description, df_attributes, verbose=True, name="test")
 df_test = fext.extractTextualFeatures(df_test)
 x_test  = fext.extractNumericalFeatures(df_test, df_test_unstemmed)
 
