@@ -1,3 +1,5 @@
+## feature_extraction/extraction.py
+
 import pandas as pd
 import feature_extraction.textual as T
 import feature_extraction.numerical as N
@@ -22,8 +24,10 @@ class FeatureExtractor:
         self.numericalExtractors = {
             'Average position of matched query words': N.AveragePositionMatchedSearchTerms(),
             'Title Overlap': N.TitleOverlap(),
-            'Word2Vec Similarity': N.Word2VecSimilarity(),
-            'Word2Vec Similarity Pretrained': N.Word2VecSimilarityPretrained(),
+            'Word2Vec Similarity of Query and PTitle': N.Word2VecSimilarity(),
+            'Word2Vec Similarity Pretrained of Query and PTitle': N.Word2VecSimilarityPretrained(),
+            'Word2Vec Summed Similarity': N.Word2vecSummedSimilarity(),
+            'Word2Vec Summed Similarity Pretrained': N.Word2VecSummedSimilarityPretrained(),
             'Description Overlap': N.DescriptionOverlap(),
             'Description Overlap Jaccard': N.DescriptionOverlapJaccard(),
             'Description Match': N.DescriptionMatch(),
@@ -44,19 +48,33 @@ class FeatureExtractor:
             'Number of 3-grams': N.QueryLength3gram(),
             'Number of 4-grams': N.QueryLength4gram(),
             'Number of Characters': N.QueryCharachterLength(),
-            'Average length of word': N.QueryAverageWordLength(),
-            'Ratio of 3-grams matching in Title': N.Ratio2gramsInQueryMatchInTitle(),
+            'Query Length by Tokens': N.QueryLengthByTokens(),            
+            'Query Length by Characters': N.QueryLengthByCharachters(),
+            'Average length of word': N.QueryAverageTokenLength(),
+            'Ratio of 2-grams matching in Title': N.Ratio2gramsInQueryMatchInTitle(),
+            'Ratio of 3-grams matching in Title': N.Ratio3gramsInQueryMatchInTitle(),
+            'Ratio of 4-grams matching in Title': N.Ratio4gramsInQueryMatchInTitle(),
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
             'Ratio of Numbers': N.RatioNumbersInQuery(),
-            'Number of Vowels in Search Term': N.NumberOfVowelsSearchTerm(),
-            'Number of Nouns': N.NumberOfNouns(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
+            'Query: Counts of Characters per Class': N.CountsOfCharsPerClass(),
+            'Query: Counts of Tokens per Class': N.CountsOfTokensPerClass(),
+            'Ratio of alphabeticals to numericals in query (in terms of characters)': N.RatioAlphaVsNumInQueryChars(),
+            'Ratio of alphabeticals to numericals in query (in terms of tokens)': N.RatioAlphaVsNumInQueryTokens(),
+            'Ratio of alphabeticals to spaces in query': N.RatioAlphasVsSpacesInQuery(),
+            'Ratio of numericals to spaces in query': N.RatioNumericalsVsSpacesInQuery(),
+            'Ratio of words to nonwords in query': N.RatioWordsVsNonwords(),
+            'Count of special (non-alphabetical, non-numerical, non-space) chars in Q': N.LengthNonSpaceNonAlphaNonNumericalChars(),
+            'Count of non-purely alpha/numerical/space tokens in Q': N.LengthNonSpaceNonAlphaNonNumericalTokens(),
+            'Count of Nouns in Query': N.NumberOfNouns(),
+            'Number of Vowels in Search Term': N.NumberOfVowelsSearchTerm(),
             'Number of Vowels in Title': N.NumberOfVowelsTitle(),
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
             'Last word in query title':N.LastWordInTitle(),
             'First word in query title':N.FirstWordInTitle(),
-            
-            
+            'Average Term Frequency of Query': N.AverageTermFrequency(),
+            'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
+            'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):
