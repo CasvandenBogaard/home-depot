@@ -251,8 +251,8 @@ else:
 
 fext = FeatureExtractor(df_description, df_attributes, verbose=True, name="train")
 
-df_train = fext.extractTextualFeatures(df_train)
-df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed)
+df_train = fext.extractTextualFeatures(df_train, saveResults=True)
+df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed, saveResults=True)
 
 
 w = run_cross_val(df_train, 5, find_weights=True)
