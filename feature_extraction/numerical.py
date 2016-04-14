@@ -77,6 +77,10 @@ class Ratio4gramsInQueryMatchInTitle:
         ndf['total_match_title'] = [math.floor(x/y) for x,y in zip(title_4gram_overlap, query_4gram_length)]
         
 
+# % of query that match with title in terms of words, in terms of biwords
+
+
+
 # description
 
 class DescriptionOverlap:
