@@ -43,13 +43,12 @@ class FeatureExtractor:
             'Brand Match': N.BrandMatch(),
             'Color Overlap': N.ColorOverlap(),
             'Color Match': N.ColorMatch(),
-            'Number of Words': N.QueryLength(),
+            'Number of Words': N.QueryLengthByTokens(),
             'Number of 2-grams': N.QueryLength2gram(),
             'Number of 3-grams': N.QueryLength3gram(),
             'Number of 4-grams': N.QueryLength4gram(),
-            'Number of Characters': N.QueryCharachterLength(),
             'Query Length by Tokens': N.QueryLengthByTokens(),            
-            'Query Length by Characters': N.QueryLengthByCharachters(),
+            'Query Length by Characters': N.QueryLengthByCharacters(),
             'Average length of word': N.QueryAverageTokenLength(),
             'Ratio of 2-grams matching in Title': N.Ratio2gramsInQueryMatchInTitle(),
             'Ratio of 3-grams matching in Title': N.Ratio3gramsInQueryMatchInTitle(),
@@ -59,8 +58,10 @@ class FeatureExtractor:
 
             'Percent of Query Characters numerical': N.PercOfQueryTokensNumerical(),
             'Percent of Query characters numerical': N.PercOfQueryCharsNumerical(),
+            'Percent of Query characters alphabetical': N.PercOfQueryCharsOther(),
             'Percent of Query characters alphabetical': N.PercOfQueryCharsAlphabetical(),
             'Percent of Query characters spaces': N.PercOfQueryCharsSpaces(),
+
 
             'Percent of Query Characters special': N.PercOfQueryCharsOther(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
@@ -75,13 +76,16 @@ class FeatureExtractor:
             'Count of non-purely alpha/numerical/space tokens in Q': N.LengthNonSpaceNonAlphaNonNumericalTokens(),
             'Count of Nouns in Query': N.NumberOfNouns(),
             'Number of Vowels in Search Term': N.NumberOfVowelsSearchTerm(),
-            'Number of Vowels in Title': N.NumberOfVowelsTitle(),
+            # missing in numerical.py? 'Number of Vowels in Title': N.NumberOfVowelsTitle(),
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
             'Last word in query title':N.LastWordInTitle(),
             'First word in query title':N.FirstWordInTitle(),
             'Average Term Frequency of Query': N.AverageTermFrequency(),
             'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
             'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
+            'Description Lengths': N.DescriptionLength(),
+            'Product Title Lengths': N.TitleLength(),
+            'Relative Lengths': N.RelativeLengths(),
         }
 
     def extractTextualFeatures(self, df, saveResults=False):
@@ -104,7 +108,16 @@ class FeatureExtractor:
         if saveResults and os.path.isfile('data/features/numerical_{}.csv'.format(self.name)):
             if (self.isVerbose):
                 print("Numerical feature extraction: reading from saved file")
-            return pd.read_csv('data/features/numerical_{}.csv'.format(self.name))
+            ndf = pd.read_csv('data/features/numerical_{}.csv'.format(self.name))
+
+            for key in self.getFeaturesToRefresh():
+                extractor = self.numericalExtractors[key]
+                if (self.isVerbose):
+                    print("Numerical feature refreshing: {}".format(key))
+                extractor.extract(df, df_un, ndf)
+
+            ndf.to_csv('data/features/numerical_{}.csv'.format(self.name), index=False)
+            return ndf
 
         ndf = pd.DataFrame()
         for key, extractor in self.numericalExtractors.items():
@@ -116,3 +129,10 @@ class FeatureExtractor:
             ndf.to_csv('data/features/numerical_{}.csv'.format(self.name))
 
         return ndf
+
+    def getFeaturesToRefresh(_self):
+        return [
+            # "Average Term Frequency of Query",
+            # "Minimum Term Frequency of Query",
+            # "Maximum Term Frequency of Query",
+        ]

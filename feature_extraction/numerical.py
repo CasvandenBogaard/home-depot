@@ -57,7 +57,6 @@ class TitleMatch4gram:
     def extract(self, tdf, tdf_un, ndf):
         ndf['title_match_4gram'] = [1 if x in y else 0 for x,y in zip(tdf['search_term_4gram'], tdf['product_title_4gram'])]
         
-# % of query that match with title
 class Ratio2gramsInQueryMatchInTitle:
     def extract(self, tdf, tdf_un, ndf):
         query_2gram_length = [len(x.split()) for x in tdf['search_term_2gram']]
@@ -75,29 +74,12 @@ class Ratio4gramsInQueryMatchInTitle:
         query_4gram_length = [len(x.split()) for x in tdf['search_term_4gram']]
         title_4gram_overlap = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term_4gram'], tdf['product_title_4gram'])]
         ndf['total_match_title'] = [math.floor(x/y) for x,y in zip(title_4gram_overlap, query_4gram_length)]
-        
 
 # % of query that match with title in terms of words, in terms of biwords
+# ....
 
 
-
-# description
-
-class DescriptionOverlap:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['descr_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
-
-class DescriptionOverlapJaccard:
-    def extract(self, tdf, tdf_un, ndf):
-        tmp = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
-        ndf['descr_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(tdf['search_term'], tdf['product_description'], tmp)]
-
-class DescriptionMatch:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['description_match'] = [1 if x in y else 0 for x,y in zip(tdf['search_term'], tdf['product_description'])]
-
-
-# word2vec similarities
+## word2vec similarities
 
 # word2vec similarity of query and product title
 class Word2VecSimilarity:
@@ -154,8 +136,24 @@ class Word2VecSimilarityPretrained:
             ]
 
 
+## description
 
-# misc
+class DescriptionOverlap:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['descr_overlap'] = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
+
+class DescriptionOverlapJaccard:
+    def extract(self, tdf, tdf_un, ndf):
+        tmp = [sum(int(word in y) for word in x.split()) for x,y in zip(tdf['search_term'], tdf['product_description'])]
+        ndf['descr_overlap_jc'] = [z / (len(x.split()) + len(y.split()) - z)  for x,y,z in zip(tdf['search_term'], tdf['product_description'], tmp)]
+
+class DescriptionMatch:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['description_match'] = [1 if x in y else 0 for x,y in zip(tdf['search_term'], tdf['product_description'])]
+
+
+
+## misc
 
 class BrandMatch:
     def extract(self, tdf, tdf_un, ndf):
@@ -167,7 +165,15 @@ class ColorOverlap:
 
 class ColorMatch:
     def extract(self, tdf, tdf_un, ndf):
-        ndf['color_match'] = [1 if str(y) in x else 0 for x,y in zip(tdf['search_term'], tdf['colors'])]
+        ndf['color_match'] = [1 if str(y) in x else 0 for x,y in zip(tdf['search_term'], tdf['colors'])]        
+
+
+
+
+
+
+
+
 
 
 
@@ -204,7 +210,8 @@ def alpha_num_ratio(x):
         alpha_num_ratio = (alphas)/(numericals)
         return alpha_num_ratio
 
-# various length features
+
+## various length features
 
 # query feature
 class QueryLengthByTokens:
@@ -227,7 +234,7 @@ class QueryLength4gram:
         ndf['query_length_4gram'] = [len(x.split()) for x in tdf['search_term_4gram']]
 
 # query feature
-class QueryLengthByCharachters:
+class QueryLengthByCharacters:
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_character_length'] = [len(x) for x in tdf['search_term']]
 
@@ -245,9 +252,6 @@ class QueryAverageNonwordLength:
         query_length = [len(x.split()) for x in tdf['search_term']]
         query_char_length = ndf['query_character_length'] = [len(x) for x in tdf['search_term']]
         ndf['query_average_token_length'] = [y/x for x,y in zip(query_length, query_char_length)]
-
-
-## more length!
 
 # query feature
 # absolute number of special characters in query
@@ -280,7 +284,6 @@ class NumberOfNouns:
         nouns = [[word for word,pos in lst if pos in ['NN', 'NNP', 'NNS', 'NNPS']] for lst in result]
         ndf['number_of_nouns'] = [int(len(x)) for x in nouns]
 
-
 # query feature
 # number of adjectives in query? etc etc (other POS-tags)
 
@@ -293,6 +296,7 @@ class NumberOfVowelsSearchTerm:
 # query feature
 ## absolute occurrence of character class (numerical, alphabetical, spaces, others (signs etc.))
 class CountsOfCharsPerClass:
+
     def extract(self, tdf, tdf_un, ndf):
         ndf['count_of_num_chars'] = [countdigits(x) for x in tdf['search_term']]
         ndf['count_of_alph_chars'] = [countchars(x) for x in tdf['search_term']]
@@ -317,6 +321,10 @@ class AmountOfNumbersInQuery:
     def extract(self, tdf, tdf_un, ndf):
         ndf['amount_numbers'] = [sum(s.isdigit() for s in nltk.word_tokenize((x))) for x in tdf['search_term']]
 
+
+
+## ratios, percentages etc.
+
 # query feature
 class PercOfQueryCharsNumerical:
     def extract(self, tdf, tdf_un, ndf):
@@ -325,7 +333,7 @@ class PercOfQueryCharsNumerical:
         ndf['perc_of_query_numerical'] = [y/x for x,y in zip(query_length_in_chars, amount_numericals)]
 
 # query feature
-class PercOfQueryCharsNumerical:
+class PercOfQueryTokensNumerical:
     def extract(self, tdf, tdf_un, ndf):
         query_length_in_tokens = [len(nltk.word_tokenize(x)) for x in tdf['search_term']]
         amount_numbers = [sum(s.isdigit() for s in nltk.word_tokenize((x))) for x in tdf['search_term']]
@@ -351,18 +359,6 @@ class PercOfQueryCharsSpaces:
         query_length_in_chars = [len(x) for x in tdf['search_term']]
         query_spaces = [countspaces(x) for x in tdf['search_term']]
         ndf['perc_of_query_spaces_chars'] = [(x)/(y) for x,y in zip(query_spaces, query_length_in_chars)]
-
-
-
-## misc
-
-# was spelling-correction performed?
-class SpellingCorrectionPerformed:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['spell_corrected'] = [x for x in tdf['spell_corrected']]
-
-
-## ratios!
 
 # query feature
 # ratio of alphabetical vs numerical characters
@@ -447,17 +443,31 @@ class RatioWordsVsNonwords:
         ratio = (words + 1)/(nonwords + 1)
         return ratio
     
+
     def extract(self, tdf, tdf_un, ndf):
         ndf['query_words_nonwords_ratio'] = [self.words_nonwords_ratio(x) for x in tdf['search_term']]
 
 
 
 
-# title feature
-class NumberOfVowelsTitle:
-    def extract(self, tdf, tdf_un, ndf):
-        ndf['num_vovels_title'] = [len([y for y in x if y in 'aeouiy']) for x in tdf['product_title']]
 
+
+
+
+
+
+
+
+################
+###### MISC
+################
+
+## misc (still query features)
+
+# was spelling-correction performed?
+class SpellingCorrectionPerformed:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['spell_corrected'] = [x for x in tdf['spell_corrected']]
 
 class AveragePositionMatchedSearchTerms:
     def extract(self, tdf, tdf_un, ndf):
@@ -505,10 +515,32 @@ class MaximumTermFrequency:
 
             ndf['max_query_tf'] = [np.max([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]
 
+class DescriptionLength:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['descr_length'] = [len(x.split()) for x in tdf['product_description']]
+        ndf['descr_length_chars'] = [len(x) for x in tdf['product_description']]
+        ndf['descr_av_word_length'] = [y / x for x, y in zip(ndf['descr_length'], ndf['descr_length_chars'])]
+
+class TitleLength:
+    def extract(self, tdf, tdf_un, ndf):
+        ndf['title_length'] = [len(x.split()) for x in tdf['product_title']]
+        ndf['title_length_chars'] = [len(x) for x in tdf['product_title']]
+        ndf['title_av_word_length'] = [y / x for x, y in zip(ndf['title_length'], ndf['title_length_chars'])]
+
+class RelativeLengths:
+    def extract(self, tdf, tdf_un, ndf):
+        querylen = [len(x.split()) for x in tdf['search_term']]
+        titlelen = [len(x.split()) for x in tdf['product_title']]
+        descrlen = [len(x.split()) for x in tdf['product_description']]
+
+        ndf['rel_query_title_length'] = [y / x for x, y in zip(querylen, titlelen)]
+        ndf['rel_query_descr_length'] = [y / x for x, y in zip(querylen, descrlen)]
+        ndf['rel_title_descr_length'] = [y / x for x, y in zip(titlelen, descrlen)]
+
+
 
 
 
 ######
 ## BINARY FEATURES
 ######
-
