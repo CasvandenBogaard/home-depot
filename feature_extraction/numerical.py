@@ -491,29 +491,33 @@ class FirstWordInTitle:
         ndf['first_word_match'] = [1 if (y.split()[0] in x) else 0  for x,y in zip(tdf['search_term'], tdf['product_title'])]
         
 
-class AverageTermFrequency:
+class TermFrequency:
     def extract(self, tdf, tdf_un, ndf):
-        with open('data/termcounts/counts.pkl', 'rb') as fcounts, open('data/termcounts/vocab.pkl', 'rb') as fvocab:
+        with open('data/termcounts/dict.pkl', 'rb') as fcounts:
             counts = pickle.load(fcounts)
-            vocab = pickle.load(fvocab)
 
-            ndf['average_query_tf'] = [np.average([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]
+            ndf['mean_query_tf'] = [np.mean([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+            ndf['min_query_tf'] = [np.min([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+            ndf['max_query_tf'] = [np.max([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+            ndf['std_query_tf'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
 
-class MinimumTermFrequency:
+class DocumentFrequency:
     def extract(self, tdf, tdf_un, ndf):
-        with open('data/termcounts/counts.pkl', 'rb') as fcounts, open('data/termcounts/vocab.pkl', 'rb') as fvocab:
+        with open('data/termcounts/doccounts.pkl', 'rb') as fcounts:
             counts = pickle.load(fcounts)
-            vocab = pickle.load(fvocab)
 
-            ndf['min_query_tf'] = [np.min([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]
-
-class MaximumTermFrequency:
-    def extract(self, tdf, tdf_un, ndf):
-        with open('data/termcounts/counts.pkl', 'rb') as fcounts, open('data/termcounts/vocab.pkl', 'rb') as fvocab:
-            counts = pickle.load(fcounts)
-            vocab = pickle.load(fvocab)
-
-            ndf['max_query_tf'] = [np.max([counts[0, vocab.get(y)] if vocab.get(y) != None else 0 for y in x.split()]) for x in tdf['search_term']]
+            ndf['mean_query_df'] = [np.mean([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                    tdf['search_term']]
+            ndf['min_query_df'] = [np.min([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+            ndf['max_query_df'] = [np.max([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+            ndf['std_query_df'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
 
 class DescriptionLength:
     def extract(self, tdf, tdf_un, ndf):

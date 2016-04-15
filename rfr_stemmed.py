@@ -13,7 +13,6 @@ from sklearn.isotonic import IsotonicRegression
 from sklearn.kernel_ridge import KernelRidge
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
-from Lasagne_Network import Network
 
 
 def rmse(true, test):
@@ -26,7 +25,7 @@ def get_target_values(train, test):
         return y_train, y_test
     return y_train
 
-def run_cross_val(df_train,net, K, w=0, find_weights=False):
+def run_cross_val(df_train, K, w=0, find_weights=False):
     N = df_train.shape[0]
 
     # Cross-validation setup
@@ -43,7 +42,7 @@ def run_cross_val(df_train,net, K, w=0, find_weights=False):
 
         y_train, y_test = get_target_values(train_set, test_set)
 
-        clfs, clf_feats = train_classifiers(x_train, y_train, net)
+        clfs, clf_feats = train_classifiers(x_train, y_train)
         y_pred = predict_test(clfs, clf_feats, x_test)
         
         if find_weights:
@@ -65,16 +64,15 @@ def run_cross_val(df_train,net, K, w=0, find_weights=False):
     
     return np.array(w_avg)/len(kf)
     
-def train_classifiers(x_train, y_train, net):
-    print("xtrain")
-    print(x_train.shape)
+def train_classifiers(x_train, y_train):
+    print("Xtrain shape: {}".format(x_train.shape))
     clfs = []
     clf_feats = []
     labels = list(x_train)
     
     #Random forest
     #Kaggle score: 0.47834
-    clf_rfr = RandomForestRegressor(n_estimators=300, max_depth=11, n_jobs=-1)
+    clf_rfr = RandomForestRegressor(n_estimators=1000, max_depth=11, n_jobs=-1)
     features = []
     x_feats = keep_features(x_train, features)
     clf_rfr.fit(x_feats, y_train)
@@ -153,7 +151,7 @@ def train_classifiers(x_train, y_train, net):
     
     #Gradient Boosting
     #Kaggle score: 0.47744
-    clf_gb = GradientBoostingRegressor(n_estimators=300)
+    clf_gb = GradientBoostingRegressor(n_estimators=1000)
     features = []
     x_feats = keep_features(x_train, features)
     clf_gb.fit(x_feats, y_train)
@@ -180,10 +178,10 @@ def train_classifiers(x_train, y_train, net):
     #clf_feats.append(features)
 
     #Network regressor
-    clf_net = net
-    features = []
-    clfs.append(clf_net)
-    clf_feats.append(features)
+    # clf_net = net
+    # features = []
+    # clfs.append(clf_net)
+    # clf_feats.append(features)
     
     return clfs, clf_feats
     
@@ -265,14 +263,15 @@ else:
 
 fext = FeatureExtractor(df_description, df_attributes, verbose=True, name="train")
 
-df_train = fext.extractTextualFeatures(df_train, saveResults=True)
-df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed, saveResults=True)
+df_train = fext.extractTextualFeatures(df_train)
+df_x_train = fext.extractNumericalFeatures(df_train, df_train_unstemmed)
 y_train = get_target_values(df_train, df_test)
 
 
-net = Network(df_x_train, y_train)
+# net = Network(df_x_train, y_train)
 
-w = run_cross_val(df_train,net, 5, find_weights=True)
+
+w = run_cross_val(df_train, 5, find_weights=True)
 
 print("Avg of weights: ",w)
 
@@ -289,7 +288,7 @@ id_test = df_test['id']
 
 
 y_train = get_target_values(df_train, df_test)
-clfs, clf_feats = train_classifiers(x_train, y_train, net)
+clfs, clf_feats = train_classifiers(x_train, y_train)
 y_pred = predict_test(clfs, clf_feats, x_test)
 y_pred = np.dot(y_pred, w)
 

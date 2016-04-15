@@ -55,14 +55,11 @@ class FeatureExtractor:
             'Ratio of 4-grams matching in Title': N.Ratio4gramsInQueryMatchInTitle(),
             'Amount of Numbers': N.AmountOfNumbersInQuery(),
             'Amount of Numericals': N.AmountOfNumericalCharactersInQuery(),
-
-            'Percent of Query Characters numerical': N.PercOfQueryTokensNumerical(),
+            'Percent of Query Tokens numerical': N.PercOfQueryTokensNumerical(),
             'Percent of Query characters numerical': N.PercOfQueryCharsNumerical(),
-            'Percent of Query characters alphabetical': N.PercOfQueryCharsOther(),
+            'Percent of Query characters Others': N.PercOfQueryCharsOther(),
             'Percent of Query characters alphabetical': N.PercOfQueryCharsAlphabetical(),
             'Percent of Query characters spaces': N.PercOfQueryCharsSpaces(),
-
-
             'Percent of Query Characters special': N.PercOfQueryCharsOther(),
             'Spelling Correction Performed': N.SpellingCorrectionPerformed(),
             'Query: Counts of Characters per Class': N.CountsOfCharsPerClass(),
@@ -80,9 +77,8 @@ class FeatureExtractor:
             'Distance between title matched terms': N.DistanceMatchedSearchTerms(),
             'Last word in query title':N.LastWordInTitle(),
             'First word in query title':N.FirstWordInTitle(),
-            'Average Term Frequency of Query': N.AverageTermFrequency(),
-            'Minimum Term Frequency of Query': N.MinimumTermFrequency(),
-            'Maximum Term Frequency of Query': N.MaximumTermFrequency(),
+            'Avg, Min, Max, Std Term Frequency of Query': N.TermFrequency(),
+            'Avg, Min, Max, Std Document Frequency of Query words': N.DocumentFrequency(),
             'Description Lengths': N.DescriptionLength(),
             'Product Title Lengths': N.TitleLength(),
             'Relative Lengths': N.RelativeLengths(),
