@@ -505,7 +505,22 @@ class TermFrequency:
             ndf['std_query_tf'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
                                    tdf['search_term']]
 
-class DocumentFrequency:
+class TermFrequencyProductTitle:
+    def extract(self, tdf, tdf_un, ndf):
+        with open('data/termcounts/dict.pkl', 'rb') as fcounts:
+            counts = pickle.load(fcounts)
+
+            ndf['mean_title_tf'] = [np.mean([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+            ndf['min_title_tf'] = [np.min([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+            ndf['max_title_tf'] = [np.max([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+            ndf['std_title_tf'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+
+
+class DocFrequencyQueryQuery:
     def extract(self, tdf, tdf_un, ndf):
         with open('data/termcounts/doccounts.pkl', 'rb') as fcounts:
             counts = pickle.load(fcounts)
@@ -518,6 +533,48 @@ class DocumentFrequency:
                                    tdf['search_term']]
             ndf['std_query_df'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
                                    tdf['search_term']]
+
+class DocFrequencyTitleQuery:
+    def extract(self, tdf, tdf_un, ndf):
+        with open('data/termcounts/doccounts.pkl', 'rb') as fcounts:
+            counts = pickle.load(fcounts)
+
+            ndf['mean_query_title_df'] = [np.mean([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                    tdf['product_title']]
+            ndf['min_query_title_df'] = [np.min([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+            ndf['max_query_title_df'] = [np.max([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+            ndf['std_query_title_df'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+
+class DocFrequencyQueryTitle:
+    def extract(self, tdf, tdf_un, ndf):
+        with open('data/termcounts/prodcounts.pkl', 'rb') as fcounts:
+            counts = pickle.load(fcounts)
+
+            ndf['mean_title_query_df'] = [np.mean([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                    tdf['search_term']]
+            ndf['min_title_query_df'] = [np.min([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+            ndf['max_title_query_df'] = [np.max([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+            ndf['std_query_query_df'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['search_term']]
+
+class DocFrequencyTitleTitle:
+    def extract(self, tdf, tdf_un, ndf):
+        with open('data/termcounts/prodcounts.pkl', 'rb') as fcounts:
+            counts = pickle.load(fcounts)
+
+            ndf['mean_title_df'] = [np.mean([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                    tdf['product_title']]
+            ndf['min_title_df'] = [np.min([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+            ndf['max_title_df'] = [np.max([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
+            ndf['std_title_df'] = [np.std([counts[y] if y in counts else 0 for y in x.split()]) for x in
+                                   tdf['product_title']]
 
 class DescriptionLength:
     def extract(self, tdf, tdf_un, ndf):

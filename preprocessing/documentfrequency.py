@@ -48,3 +48,14 @@ if "df" in DO_THIS:
 
     with open('data/termcounts/doccounts.pkl', 'wb') as file:
         pickle.dump(doc_freqs, file)
+
+    titles = np.concatenate([df_train['product_title'], df_test['product_title']])
+
+    titles = np.unique(titles)
+
+    prod_frequencies = [Counter(document.split()) for document in titles]
+    prod_freqs = Counter()
+    [prod_freqs.update(word_frequency.keys()) for word_frequency in prod_frequencies]
+
+    with open('data/termcounts/prodcounts.pkl', 'wb') as file:
+        pickle.dump(prod_freqs, file)
