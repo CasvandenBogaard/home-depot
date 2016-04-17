@@ -72,7 +72,7 @@ def train_classifiers(x_train, y_train):
     
     #Random forest
     #Kaggle score: 0.47834
-    clf_rfr = RandomForestRegressor(n_estimators=1000, max_depth=11, n_jobs=-1)
+    clf_rfr = RandomForestRegressor(n_estimators=5000, max_depth=11, n_jobs=-1)
     features = []
     x_feats = keep_features(x_train, features)
     clf_rfr.fit(x_feats, y_train)
@@ -151,7 +151,7 @@ def train_classifiers(x_train, y_train):
     
     #Gradient Boosting
     #Kaggle score: 0.47744
-    clf_gb = GradientBoostingRegressor(n_estimators=1000)
+    clf_gb = GradientBoostingRegressor(n_estimators=7000)
     features = []
     x_feats = keep_features(x_train, features)
     clf_gb.fit(x_feats, y_train)
